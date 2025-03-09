@@ -37,6 +37,12 @@ class Board(object):
     def string_from(cls, board_arr):
         pass
 
+    def check(self, color):
+        pass
+
+    def checkmate(self, color):
+        pass
+
     def __str__(self):
         return "\n".join(["".join([str(x) if x else '_' for x in y]) for y in self.board_array ][::-1])
 
@@ -59,9 +65,6 @@ class Piece(object):
 
     def __str__(self):
         return self.__repr__()
-
-
-        #self.piece_char = piece_char
 
 #------------------PIECES-----------------------------#
 
