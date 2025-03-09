@@ -18,8 +18,8 @@ class Game(object):
 class Board(object):
     default = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
-    def __init__(self, board_string=None, board_arr=None):
-        if   board_arr:     self.board_array = board_arr
+    def __init__(self, board_string=None, board_array=None):
+        if   board_array:   self.board_array = board_array
         elif board_string:  self.board_array = self.arr_from(board_string)
         else:               self.board_array = self.arr_from(self.default)
 
@@ -33,8 +33,12 @@ class Board(object):
                 else:           new_arr[-1] += [Game.piece_factory(j)]
         return new_arr
 
+    @classmethod
+    def string_from(cls, board_arr):
+        pass
+
     def __str__(self):
-        return self.string_from(self.board_arr)
+        return "\n".join(["".join([str(x) if x else '_' for x in y]) for y in self.board_array ][::-1])
 
     #def board_from_arr
 
@@ -83,5 +87,6 @@ class Pawn(Piece):
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
     a = Board()
-    print(a.board_array)
+    #print(a.board_array)
+    print(str(a))
 
