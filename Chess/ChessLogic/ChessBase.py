@@ -55,6 +55,10 @@ class Piece(object):
         else:
             self.color = color
 
+    @staticmethod
+    def rrun(op, np):
+        return (op[0] - np[0], op[1] - np[1])
+
     def __repr__(self):
         return self.rep if self.color == 'white' else self.rep.upper()
 
@@ -65,21 +69,41 @@ class Piece(object):
 
 class King(Piece):
     rep='k'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
+        return abs(a[0]) <= 1 \
+           and abs(a[1]) <= 1
 
 class Queen(Piece):
     rep='q'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
+        return     abs(a[0]) == abs(a[1]) \
+            or (a[0] * a[1]) == 0
 
 class Bishop(Piece):
     rep='b'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
+        return abs(a[0]) == abs(a[1])
 
 class Knight(Piece):
     rep='n'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
+        return (abs(a[0]) == 2 and abs(a[1] == 1)) \
+            or (abs(a[0]) == 1 and abs(a[1] == 2))
 
 class Rook(Piece):
     rep='r'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
+        return (a[0] * a[1]) == 0
 
 class Pawn(Piece):
     rep='p'
+    def valid_move(self, op, np):
+        a = super.rrun(op, np)
 
 class Empty(Piece):
     rep='-'
