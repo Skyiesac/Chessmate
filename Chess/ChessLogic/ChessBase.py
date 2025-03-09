@@ -8,11 +8,10 @@ class Game(object):
 
     @staticmethod
     def piece_factory(chp):
-        dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn}
-        if chp.lower() in dt:
-            return dt[chp.lower()]('white' if chp.islower() else 'black')
-        else:
-            raise ValueError("'chp' needs to be char: 'k', 'q', 'n', 'r', or 'p' (or equivalent uppercase).")
+        dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn, '-': Empty}
+        lc = chp.lower()
+        if lc in dt: return dt[lc]('white' if (chp == lc) else 'black')
+        else:        raise ValueError("'chp' needs to be char: 'k', 'q', 'n', 'r', or 'p' (or equivalent uppercase).")
 
 #------------------GAME-------------------------------#
 class Board(object):
@@ -26,12 +25,8 @@ class Board(object):
     @classmethod
     def arr_from(cls, from_string):
         new_arr = []
-        for i in from_string.split("/"):
-            new_arr.append([])
-            for j in i:
-                if j.isdigit(): new_arr[-1] += [None] * int(j)
-                else:           new_arr[-1] += [Game.piece_factory(j)]
-        return new_arr
+        for i in '123456789': from_string = from_string.replace(i, "-"*int(i))
+        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
 
     @classmethod
     def string_from(cls, board_arr):
@@ -44,7 +39,7 @@ class Board(object):
         pass
 
     def __str__(self):
-        return "\n".join(["".join([str(x) if x else '_' for x in y]) for y in self.board_array ][::-1])
+        return "\n".join(["".join([str(x) for x in y]) for y in self.board_array][::-1])
 
     #def board_from_arr
 
@@ -52,7 +47,7 @@ class Board(object):
 
 class Piece(object):
     valid_colors = ['white', 'black']
-    rep='_'
+    rep='-'
 
     def __init__(self, color):
         if color not in self.valid_colors:
@@ -86,6 +81,8 @@ class Rook(Piece):
 class Pawn(Piece):
     rep='p'
 
+class Empty(Piece):
+    rep='-'
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
