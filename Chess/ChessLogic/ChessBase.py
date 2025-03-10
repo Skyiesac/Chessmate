@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 
+#------------------GAME-------------------------------#
 class Game(object):
-    def __init__(self, start_string=None, past_moves=None, game_info=None):
-        self.start_string   = start_string
-        self.past_moves     = past_moves
+    default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+
+    def validate_move(self, op, np):
+        pass
+
+    def __init__(self, game_info=None, moves_arr=None, board_str=None, to_play='white'):
+        self.board_array    = self.arr_from(board_str if board_str else self.default_board)
+        self.moves_arr      = moves_arr
         self.game_info      = game_info
+        self.to_play        = to_play
 
     @staticmethod
     def piece_factory(chp):
@@ -13,29 +20,21 @@ class Game(object):
         if lc in dt: return dt[lc]('white' if (chp == lc) else 'black')
         else:        raise ValueError("'chp' needs to be char: 'k', 'q', 'n', 'r', or 'p' (or equivalent uppercase).")
 
-#------------------GAME-------------------------------#
-class Board(object):
-    default = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-
-    def __init__(self, board_string=None, board_array=None):
-        if   board_array:   self.board_array = board_array
-        elif board_string:  self.board_array = self.arr_from(board_string)
-        else:               self.board_array = self.arr_from(self.default)
-
     @classmethod
     def arr_from(cls, from_string):
         new_arr = []
-        for i in '123456789': from_string = from_string.replace(i, "-"*int(i))
+        for i in '123456789':
+            from_string = from_string.replace(i, "-"*int(i))
         return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
 
     @classmethod
     def string_from(cls, board_arr):
         pass
 
-    def check(self, color):
+    def is_check(self):
         pass
 
-    def checkmate(self, color):
+    def is_checkmate(self):
         pass
 
     def __str__(self):
@@ -59,6 +58,14 @@ class Piece(object):
     def rrun(op, np):
         return (op[0] - np[0], op[1] - np[1])
 
+    @staticmethod
+    def verify_vh(op, np):
+        return (op[0] == np[0]) or (op[1] == np[1])
+
+    @staticmethod
+    def verify_diag(op, np):
+        return abs(op[0] - np[0]) == abs(op[1] - np[1])
+
     def __repr__(self):
         return self.rep if self.color == 'white' else self.rep.upper()
 
@@ -71,21 +78,17 @@ class King(Piece):
     rep='k'
     def valid_move(self, op, np):
         a = super.rrun(op, np)
-        return abs(a[0]) <= 1 \
-           and abs(a[1]) <= 1
+        return abs(a[0]) <= 1 and abs(a[1]) <= 1
 
 class Queen(Piece):
     rep='q'
     def valid_move(self, op, np):
-        a = super.rrun(op, np)
-        return     abs(a[0]) == abs(a[1]) \
-            or (a[0] * a[1]) == 0
+        return super.verify_diag(op, np) or super.verify_vh(op, np)
 
 class Bishop(Piece):
     rep='b'
     def valid_move(self, op, np):
-        a = super.rrun(op, np)
-        return abs(a[0]) == abs(a[1])
+        return super.verify_diag(op, np)
 
 class Knight(Piece):
     rep='n'
@@ -97,8 +100,7 @@ class Knight(Piece):
 class Rook(Piece):
     rep='r'
     def valid_move(self, op, np):
-        a = super.rrun(op, np)
-        return (a[0] * a[1]) == 0
+        return super.verify_vh(op, np)
 
 class Pawn(Piece):
     rep='p'
@@ -110,7 +112,7 @@ class Empty(Piece):
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
-    a = Board()
+    a = Game()
     #print(a.board_array)
     print(str(a))
 
