@@ -84,14 +84,10 @@ class Game(object):
 #------------------ABSTRACT---------------------------#
 
 class Piece(object):
-    valid_colors = ['white', 'black', 'empty']
     rep='*'
 
     def __init__(self, color):
-        if color not in self.valid_colors:
-            raise ValueError("Color must be an element within '" + self.__class__.__name__ + ".valid_colors'")
-        else:
-            self.color = color
+        self.color = color
 
     @staticmethod
     def verify_vh(op, np):
