@@ -20,10 +20,11 @@ class Game(object):
 
     @staticmethod
     def piece_factory(chp):
-        dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn, '-': Empty}
-        lc = chp.lower()
-        if lc in dt: return dt[lc]('white' if (chp == lc) else 'black')
-        else:        raise ValueError("'chp' needs to be char: 'k', 'q', 'n', 'r', or 'p' (or equivalent uppercase).")
+        dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight,
+              'r': Rook, 'p': Pawn, '-': Empty}
+        if (lc := chp.lower()) in dt:
+            return dt[lc]('white' if (chp == lc) else 'black')
+        raise ValueError("'chp' needs to be char: 'k', 'q', 'n', 'r', or 'p' (or equivalent uppercase).")
 
     @classmethod
     def arr_from(cls, from_string):
@@ -39,7 +40,7 @@ class Game(object):
         if not self.valid_move(op, np):
             return False
         self.board_array[np[0]][np[1]] = self.get_piece(op)
-        self.board_array[op[0]][op[1]] = self.get_piece(op)
+        self.board_array[op[0]][op[1]] = Empty('empty')
         return True
 
     def valid_move(op, np):
@@ -83,7 +84,7 @@ class Game(object):
 #------------------ABSTRACT---------------------------#
 
 class Piece(object):
-    valid_colors = ['white', 'black']
+    valid_colors = ['white', 'black', 'empty']
     rep='*'
 
     def __init__(self, color):
@@ -141,6 +142,8 @@ class Pawn(Piece):
 
 class Empty(Piece):
     rep='-'
+    def __init__(self, color):
+        self.color = 'empty'
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
