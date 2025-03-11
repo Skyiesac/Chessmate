@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 
-def rrun(op, np):
-    return (op[0] - np[0], op[1] - np[1])
+def rrun(op, np, nosign=False):
+    if nosign: return (abs(op[0] - np[0]), abs(op[1] - np[1]))
+    else:      return (    op[0] - np[0] ,     op[1] - np[1])
 
 #------------------GAME-------------------------------#
 class Game(object):
@@ -110,8 +111,8 @@ class Piece(object):
 class King(Piece):
     rep='k'
     def valid_move(self, op, np):
-        a = rrun(op, np)
-        return abs(a[0]) <= 1 and abs(a[1]) <= 1
+        a = rrun(op, np, nosign=True)
+        return a[0] <= 1 and a[1] <= 1
 
 class Queen(Piece):
     rep='q'
@@ -126,7 +127,7 @@ class Bishop(Piece):
 class Knight(Piece):
     rep='n'
     def valid_move(self, op, np):
-        a = rrun(op, np)
+        a = rrun(op, np, nosign=True)
         return 2 in a and 1 in a
 
 class Rook(Piece):
