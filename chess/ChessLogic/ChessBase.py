@@ -20,11 +20,11 @@ def tupadd(t1, t2):
 class Game(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
-    def __init__(self, game_info=None, moves_arr=None, board_str=None, to_play='white'):
+    def __init__(self, game_info=None, moves_arr=None, board_str=None, to_move='white'):
         self.board_array    = self.arr_from(board_str if board_str else self.default_board)
         self.moves_arr      = moves_arr
         self.game_info      = game_info
-        self.to_play        = to_play
+        self.to_move        = to_move
 
 #--------------_STATIC_METHODS_-------------------------#
     @staticmethod
@@ -51,6 +51,11 @@ class Game(object):
         return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
 
 #--------------_METHODS_--------------------------------#
+    def reset(self):
+        self.board_array = self.arr_from(self.default_board)
+        self.moves_arr = []
+        self.to_move = 'white'
+
     def get_piece(self, pos, alpha=False):
         if alpha:
             return self.get_piece(self.alpha_translate(pos))
@@ -67,15 +72,16 @@ class Game(object):
     def valid_move(self, op, np):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
-        return all([(type(piece) != Empty),
-                    (self.vldm(piece, op, np)),
-                    (self.illegal_intersect(piece, op, np)),
+        return all([(type(piece) != Empty and piece.color == self.to_move),
+                    (self.vldm(       piece, take_piece, op, np )),
+                    (self.iintersect( piece, op, np )),
                     (piece.color != take_piece.color)])
 
-    def vldm(self, piece, op, np):
-        return True
+    def vldm(self, piece, take_piece, op, np):
+        return piece.valid_move(op, np) \
+           and (type(piece) != Pawn or self.pawn_validate(piece, take_piece, op, np))
 
-    def illegal_intersect(self, op, np):
+    def iintersect(self, op, np):
         piece = self.get_piece(op)
         if type(piece) != Knight:
             a      = rrun(op, np)
@@ -91,8 +97,15 @@ class Game(object):
                     t0 += o0; t1 += o1
         return False
 
-    def pawn_validate(self, op, np):
-        pass
+    def pawn_validate(self, piece, take_piece, op, np):
+        a = rrun(op, np, nosign=True)
+        if a[0] == 1:
+            pass
+        elif a[0] == 2:
+            return type(take_piece) == Empty \
+               and op[0] == (1 if piece.color == 'white' else 6)
+        else:
+            return False
 
     def string_from(self):
         pass
@@ -169,8 +182,8 @@ class Pawn(Piece):
     rep='p'
     def valid_move(self, op, np):
         a = rrun(op, np, nosign=True)
-        return (self.color == 'black' and a[0] <= -1) \
-           and (self.color == 'white' and a[0] >=  1)
+        return (self.color == 'black' and a[0] < 0) \
+            or (self.color == 'white' and a[0] > 0)
 
 
 class Empty(Piece):
@@ -184,5 +197,5 @@ if __name__ == "__main__":
     #print(a.board_array)
     print(str(a))
     print(a.get_piece('h8', alpha=True))
-    print(a.illegal_intersect((0, 0), (0, 5)))
+    print(a.iintersect((0, 0), (0, 5)))
 

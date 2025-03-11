@@ -22,6 +22,7 @@ class ChessLogicTestCase(TestCase):
         self.g = Game()
 
     def test_alpha_tuple_translate(self):
+        self.g.reset()
         tr1 = 'abcdefgh'
         tr2 = '12345678'
         for i in range(0, 8):
@@ -32,20 +33,22 @@ class ChessLogicTestCase(TestCase):
                 self.assertEqual(alpha, self.g.tuple_translate(tuple))
 
     def test_intersect(self):
-        self.assertEqual(True , self.g.illegal_intersect(  (0, 0), (0, 5)  ))
-        self.assertEqual(False, self.g.illegal_intersect(  (0, 1), (2, 2)  ))
-        self.assertEqual(False, self.g.illegal_intersect(  (0, 0), (0, 1)  ))
-        self.assertEqual(False, self.g.illegal_intersect(  (0, 0), (1, 0)  ))
-        self.assertEqual(True , self.g.illegal_intersect(  (0, 2), (3, 4)  ))
-
-    def test_game(self):
-        pass
+        self.g.reset()
+        self.assertEqual(True , self.g.iintersect(  (0, 0), (0, 5)  ))
+        self.assertEqual(False, self.g.iintersect(  (0, 1), (2, 2)  ))
+        self.assertEqual(False, self.g.iintersect(  (0, 0), (0, 1)  ))
+        self.assertEqual(False, self.g.iintersect(  (0, 0), (1, 0)  ))
+        self.assertEqual(True , self.g.iintersect(  (0, 2), (3, 4)  ))
 
     def test_pawn(self):
-        pass
+        self.g.reset()
 
     def test_queen(self):
         pass
         
     def tearDown(self):
         pass
+
+    def test_game(self):
+        pass
+
