@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+
+def rrun(op, np):
+    return (op[0] - np[0], op[1] - np[1])
+
 #------------------GAME-------------------------------#
 class Game(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
@@ -27,10 +31,43 @@ class Game(object):
             from_string = from_string.replace(i, "-"*int(i))
         return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
 
+    def get_piece(pos):
+        return self.board_array[pos[0]][pos[1]]
+
+    def move_piece(op, np):
+        if not self.valid_move(op, np):
+            return False
+        self.board_array[np[0]][np[1]] = self.get_piece(op)
+        self.board_array[op[0]][op[1]] = self.get_piece(op)
+        return True
+
+    def valid_move(op, np):
+        piece       = self.get_piece(op)
+        take_piece  = self.get_piece(np)
+        return all([(type(piece) != Empty),
+                    (type(piece) == Pawn   or self.valid_move(op, np)),
+                    (type(piece) == Knight or not self.intersects(op, np)),
+                    (piece.color != take_piece.color)])
+
+    def handle_pawn(op, np):
+        pass
+
+    def intersects(op, np):
+        a       = rrun(op, np)
+        temp    = list(op)
+        add_1   = a[0] // a[1] if a[0] != 0 else 0
+        add_2   = 1            if a[1] != 0 else 0
+        while temp[0] < np[0] and temp[1] < np[1]:
+            temp[0] += add_1; temp[1] += add_2
+            if type(self.get_piece(temp)) != Empty:
+                return True
+        return False
+
+
     @classmethod
     def string_from(cls, board_arr):
         pass
-
+    
     def is_check(self):
         pass
 
@@ -46,17 +83,13 @@ class Game(object):
 
 class Piece(object):
     valid_colors = ['white', 'black']
-    rep='-'
+    rep='*'
 
     def __init__(self, color):
         if color not in self.valid_colors:
             raise ValueError("Color must be an element within '" + self.__class__.__name__ + ".valid_colors'")
         else:
             self.color = color
-
-    @staticmethod
-    def rrun(op, np):
-        return (op[0] - np[0], op[1] - np[1])
 
     @staticmethod
     def verify_vh(op, np):
@@ -77,7 +110,7 @@ class Piece(object):
 class King(Piece):
     rep='k'
     def valid_move(self, op, np):
-        a = super.rrun(op, np)
+        a = rrun(op, np)
         return abs(a[0]) <= 1 and abs(a[1]) <= 1
 
 class Queen(Piece):
@@ -93,7 +126,7 @@ class Bishop(Piece):
 class Knight(Piece):
     rep='n'
     def valid_move(self, op, np):
-        a = super.rrun(op, np)
+        a = rrun(op, np)
         return (abs(a[0]) == 2 and abs(a[1] == 1)) \
             or (abs(a[0]) == 1 and abs(a[1] == 2))
 
@@ -103,9 +136,8 @@ class Rook(Piece):
         return super.verify_vh(op, np)
 
 class Pawn(Piece):
+    # Pawn move validation is handled specifically by 'Game'.
     rep='p'
-    def valid_move(self, op, np):
-        a = super.rrun(op, np)
 
 class Empty(Piece):
     rep='-'
