@@ -2,8 +2,8 @@
 
 #--------------_HELPER_FUNCTIONS_-----------------------#
 def rrun(op, np, nosign=False):
-    if nosign: return (abs(op[0] - np[0]), abs(op[1] - np[1]))
-    else:      return (    op[0] - np[0] ,     op[1] - np[1])
+    if nosign: return (abs(np[0] - op[0]), abs(np[1] - op[1]))
+    else:      return (    np[0] - op[0] ,     np[1] - op[1])
 
 def np0(n):
     if   n < 0: return -1
@@ -78,14 +78,17 @@ class Game(object):
     def illegal_intersect(self, op, np):
         piece = self.get_piece(op)
         if type(piece) != Knight:
-            a       = rrun(op, np)
-            temp    = list(op)
-            o       = (np0(a[0]), np0(a[1]))
-            while temp[0] < np[0] or temp[1] < np[1]:
-                temp = tupadd(temp, o)
-                print(temp)
-                if type(self.get_piece(temp)) != Empty:
+            a      = rrun(op, np)
+            o0, o1 = np0(a[0]) , np0(a[1])
+            t0, t1 = op[0] + o0, op[1] + o1
+            while True:
+                print(t0, t1)
+                if t0 == np[0] and t1 == np[1]:
+                    break
+                elif type(self.get_piece((t0, t1))) != Empty:
                     return True
+                else:
+                    t0 += o0; t1 += o1
         return False
 
     def pawn_validate(self, op, np):

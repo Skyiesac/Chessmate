@@ -19,6 +19,8 @@ class ChessLogicTestCase(TestCase):
     def test_intersect(self):
         self.assertEqual(True, self.g.illegal_intersect( (0, 0), (0, 5)))
         self.assertEqual(False, self.g.illegal_intersect((0, 1), (2, 2)))
+        self.assertEqual(False, self.g.illegal_intersect((0, 0), (0, 1)))
+        self.assertEqual(False, self.g.illegal_intersect((0, 0), (1, 0)))
 
     def test_game(self):
         pass
