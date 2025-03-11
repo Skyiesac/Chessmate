@@ -16,6 +16,10 @@ class ChessLogicTestCase(TestCase):
                 self.assertEqual(tuple, self.g.alpha_translate(alpha))
                 self.assertEqual(alpha, self.g.tuple_translate(tuple))
 
+    def test_intersect(self):
+        self.assertEqual(True, self.g.illegal_intersect( (0, 0), (0, 5)))
+        self.assertEqual(False, self.g.illegal_intersect((0, 1), (2, 2)))
+
     def test_game(self):
         pass
 

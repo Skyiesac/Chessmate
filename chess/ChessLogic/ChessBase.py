@@ -1,10 +1,22 @@
 #!/usr/bin/python3
 
+#--------------_HELPER_FUNCTIONS_-----------------------#
 def rrun(op, np, nosign=False):
     if nosign: return (abs(op[0] - np[0]), abs(op[1] - np[1]))
     else:      return (    op[0] - np[0] ,     op[1] - np[1])
 
-#------------------GAME-------------------------------#
+def np0(n):
+    if   n < 0: return -1
+    elif n > 0: return  1
+    else:       return  0
+
+def tupadd(t1, t2):
+    return tuple(t1[x] + t2[x] for x in range(0, len(t1)))
+
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
 class Game(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
@@ -14,17 +26,11 @@ class Game(object):
         self.game_info      = game_info
         self.to_play        = to_play
 
+#--------------_STATIC_METHODS_-------------------------#
     @staticmethod
     def piece_factory(chp):
         dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn, '-': Empty}
         return dt[chp.lower()]('white' if (chp.islower()) else 'black')
-
-    @classmethod
-    def arr_from(cls, from_string):
-        new_arr = []
-        for i in '123456789':
-            from_string = from_string.replace(i, "-"*int(i))
-        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
 
     @staticmethod
     def alpha_translate(pos):
@@ -35,14 +41,22 @@ class Game(object):
     def tuple_translate(pos):
         move_dict = {x: 'abcdefgh'[x] for x in range(0, 8) }
         return move_dict[pos[1]] + str(pos[0] + 1)
-        
 
+#--------------_CLASS_METHODS_--------------------------#
+    @classmethod
+    def arr_from(cls, from_string):
+        new_arr = []
+        for i in '123456789':
+            from_string = from_string.replace(i, "-"*int(i))
+        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
+
+#--------------_METHODS_--------------------------------#
     def get_piece(self, pos, alpha=False):
         if alpha:
             return self.get_piece(self.alpha_translate(pos))
         return self.board_array[pos[0]][pos[1]]
 
-    def move_piece(op, np):
+    def move_piece(self, op, np):
         if not self.valid_move(op, np):
             return False
         self.board_array[np[0]][np[1]] = self.get_piece(op)
@@ -50,27 +64,32 @@ class Game(object):
         self.moves_arr.append(self.tuple_translate(op) + self.tuple_translate(np))
         return True
 
-    def valid_move(op, np):
+    def valid_move(self, op, np):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
         return all([(type(piece) != Empty),
-                    (type(piece) == Pawn   or     self.valid_move(op, np)),
-                    (type(piece) == Knight or not self.intersects(op, np)),
+                    (self.vldm(piece, op, np)),
+                    (self.illegal_intersect(piece, op, np)),
                     (piece.color != take_piece.color)])
 
-    def handle_pawn(op, np):
-        pass
+    def vldm(self, piece, op, np):
+        return True
 
-    def intersects(op, np):
-        a       = rrun(op, np)
-        temp    = list(op)
-        add_1   = a[0] // a[1] if a[0] != 0 else 0
-        add_2   = 1            if a[1] != 0 else 0
-        while temp[0] < np[0] and temp[1] < np[1]:
-            temp[0] += add_1; temp[1] += add_2
-            if type(self.get_piece(temp)) != Empty:
-                return True
+    def illegal_intersect(self, op, np):
+        piece = self.get_piece(op)
+        if type(piece) != Knight:
+            a       = rrun(op, np)
+            temp    = list(op)
+            o       = (np0(a[0]), np0(a[1]))
+            while temp[0] < np[0] or temp[1] < np[1]:
+                temp = tupadd(temp, o)
+                print(temp)
+                if type(self.get_piece(temp)) != Empty:
+                    return True
         return False
+
+    def pawn_validate(self, op, np):
+        pass
 
     def string_from(self):
         pass
@@ -81,12 +100,17 @@ class Game(object):
     def is_checkmate(self):
         pass
 
+#--------------_SPECIAL_--------------------------------#
+
     def __str__(self):
         return "\n".join(["".join([str(x) for x in y]) for y in self.board_array][::-1])
 
     #def board_from_arr
 
-#------------------ABSTRACT---------------------------#
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------#
 
 class Piece(object):
     rep='*'
@@ -157,4 +181,5 @@ if __name__ == "__main__":
     #print(a.board_array)
     print(str(a))
     print(a.get_piece('h8', alpha=True))
+    print(a.illegal_intersect((0, 0), (0, 5)))
 
