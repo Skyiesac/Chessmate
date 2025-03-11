@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     ####
-    'Chess.apps.ChessConfig',
+    'chess.apps.ChessConfig',
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 def rrun(op, np, nosign=False):
     if nosign: return (abs(op[0] - np[0]), abs(op[1] - np[1]))
     else:      return (    op[0] - np[0] ,     op[1] - np[1])
@@ -47,7 +46,7 @@ class Game(object):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
         return all([(type(piece) != Empty),
-                    (type(piece) == Pawn   or self.valid_move(op, np)),
+                    (type(piece) == Pawn   or     self.valid_move(op, np)),
                     (type(piece) == Knight or not self.intersects(op, np)),
                     (piece.color != take_piece.color)])
 
@@ -135,6 +134,11 @@ class Rook(Piece):
 class Pawn(Piece):
     # Pawn move validation is handled specifically by 'Game'.
     rep='p'
+    def valid_move(self, op, np):
+        a = rrun(op, np, nosign=True)
+        return (self.color == 'black' and a[0] <= -1) \
+           and (self.color == 'white' and a[0] >=  1)
+
 
 class Empty(Piece):
     rep='-'
