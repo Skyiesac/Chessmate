@@ -127,8 +127,7 @@ class Knight(Piece):
     rep='n'
     def valid_move(self, op, np):
         a = rrun(op, np)
-        return (abs(a[0]) == 2 and abs(a[1] == 1)) \
-            or (abs(a[0]) == 1 and abs(a[1] == 2))
+        return 2 in a and 1 in a
 
 class Rook(Piece):
     rep='r'
