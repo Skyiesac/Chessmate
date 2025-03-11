@@ -4,7 +4,17 @@ from ..ChessLogic.ChessBase import *
 
 class ChessLogicTestCase(TestCase):
     def setUp(self):
-        self.ggame = Game()
+        self.g = Game()
+
+    def test_alpha_tuple_translate(self):
+        tr1 = 'abcdefgh'
+        tr2 = '12345678'
+        for i in range(0, 8):
+            for j in range(0, 8):
+                tuple = (i, j)
+                alpha = tr1[j] + tr2[i]
+                self.assertEqual(tuple, self.g.alpha_translate(alpha))
+                self.assertEqual(alpha, self.g.tuple_translate(tuple))
 
     def test_game(self):
         pass
