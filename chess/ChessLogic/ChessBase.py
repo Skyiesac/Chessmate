@@ -81,14 +81,12 @@ class Game(object):
             self.moves_arr.append((op, np, en_pass, str(self.get_piece(op)), str(self.get_piece(en_pass)), 'en_pass'))
             self.set_piece(en_pass, '-')
         elif promo:
-            print("NOT IMPLEMENTED")
             pass
         else:
             self.moves_arr.append((op, np, str(self.get_piece(op)), str(self.get_piece(np))))
 
         self.set_piece(np, self.get_piece(op))
         self.set_piece(op, '-')
-        print('---------', self.to_move)
         self.to_move = 'white' if self.to_move == 'black' else 'black'
         return self.to_move
 
@@ -99,7 +97,6 @@ class Game(object):
         take_piece  = self.get_piece(np)
         vld_move    = piece.valid_move(op, np)
         cint        = self.check_intersect(op, np)
-        print('hi----------------', vld_move)
         if piece.color != self.to_move or not cint or not vld_move:
             return False
         elif type(piece) == Pawn:
@@ -186,11 +183,15 @@ class Game(object):
         if color == None:
             color = self.to_move
         kpos = self.king_position(color)
+        self.to_move = color; self.toggle_color()
         for i in range(0, 8):
             for j in range(0, 8):
                 if self.validate_move((i, j), kpos):
                     return True
         return False
+
+    def toggle_color(self, color=None):
+        self.to_move = 'white' if self.to_move == 'black' else 'black'
 
     def is_checkmate(self):
         pass
@@ -295,7 +296,7 @@ if __name__ == "__main__":
         print(a.move(*i, alpha=True))
         print(a.to_move)
         print(str(a))
-    #print(a.is_check('white'))
+    print(a.is_check('white'))
     #print(a.to_move)
     #print(a.en_passant((4, 3), (5, 2)))
 
