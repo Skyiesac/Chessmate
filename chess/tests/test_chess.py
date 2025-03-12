@@ -31,9 +31,9 @@ class ChessLogicTestCase(TestCase):
         ]
 
     def test_ruy_lopez(self):
-        self.g.reset()
         ruy_lopez_str = "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R"
         roy_g = str(Game(ruy_lopez_str))
+        self.g.reset()
         moves1 = [ ('e2', 'e4'),
                    ('e7', 'e5'),
                    ('g1', 'f3'),

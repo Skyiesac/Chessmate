@@ -67,13 +67,24 @@ class Game(object):
             return self.get_piece(self.alpha_translate(pos))
         return self.board_array[pos[0]][pos[1]]
 
+    def set_piece(self, pos, c, alpha=False):
+        if alpha:
+            self.get_piece(self.alpha_translate(pos))
+        elif type(c) == str:
+            self.board_array[pos[0]][pos[1]] = self.piece_factory(c)
+        else:
+            self.board_array[pos[0]][pos[1]] = c
+
     # ONLY TO BE USED INTERNALLY, USE `move` FOR EXTERNAL USE
     def internal_move(self, op, np, en_pass=False, promo=False):
-        piece       = self.get_piece(op)
-        take_piece  = self.get_piece(np)
-        self.moves_arr.append((op, np, str(piece), str(take_piece)))
-        self.board_array[np[0]][np[1]] = self.get_piece(op)
-        self.board_array[op[0]][op[1]] = Empty('empty')
+        if en_pass:
+            self.moves_arr.append((op, np, en_pass, str(self.get_piece(op)), str(self.get_piece(en_pass)), 'en_pass'))
+            self.set_piece(en_pass, '-')
+        else:
+            self.moves_arr.append((op, np, str(self.get_piece(op)), str(self.get_piece(np))))
+
+        self.set_piece(np, self.get_piece(op))
+        self.set_piece(op, '-')
         self.to_move = 'white' if self.to_move == 'black' else 'black'
         return self.to_move
 
@@ -92,14 +103,6 @@ class Game(object):
             return vld_move and (not move or self.internal_move(op, np, en_pass=en_pass))
         else:
             return vld_move and (not move or self.internal_move(op, np))
-
-        #if type(piece) == Empty:
-        #    return False
-        #elif type(piece) == Pawn:
-        #    if 
-        #elif not 
-        #    return False
-        #return (move and self.internal_move(op, np, en_pass=en_pass)) or True
 
     def validate_move(self, op, np, alpha=False):
         return self.move(op, np, move=False, alpha=alpha)
@@ -153,7 +156,7 @@ class Game(object):
                 last_move = self.moves_arr[-1]
                 mid_point = pair_average(last_move[0], last_move[1])
                 if last_move[2].lower() == 'p' and mid_point == np:
-                    return mid_point
+                    return last_move[1]
         return False
 
     def promotion(self, op, np):
@@ -277,6 +280,7 @@ if __name__ == "__main__":
               ('e4', 'd5'),
               ('c6', 'b4'),
               ('c7', 'c5'),
+              ('d5', 'c6'),
              ]
     a = Game()
     for i in moves1:
