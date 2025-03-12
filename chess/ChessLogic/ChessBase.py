@@ -80,11 +80,15 @@ class Game(object):
         if en_pass:
             self.moves_arr.append((op, np, en_pass, str(self.get_piece(op)), str(self.get_piece(en_pass)), 'en_pass'))
             self.set_piece(en_pass, '-')
+        elif promo:
+            print("NOT IMPLEMENTED")
+            pass
         else:
             self.moves_arr.append((op, np, str(self.get_piece(op)), str(self.get_piece(np))))
 
         self.set_piece(np, self.get_piece(op))
         self.set_piece(op, '-')
+        print('---------', self.to_move)
         self.to_move = 'white' if self.to_move == 'black' else 'black'
         return self.to_move
 
@@ -95,7 +99,7 @@ class Game(object):
         take_piece  = self.get_piece(np)
         vld_move    = piece.valid_move(op, np)
         cint        = self.check_intersect(op, np)
-        if type(piece) == Empty or not cint or not vld_move:
+        if piece.color != self.to_move or not cint or not vld_move:
             return False
         elif type(piece) == Pawn:
             en_pass  = self.en_passant(op, np)
@@ -279,15 +283,18 @@ if __name__ == "__main__":
               ('d7', 'd5'),
               ('e4', 'd5'),
               ('c6', 'b4'),
-              ('c7', 'c5'),
-              ('d5', 'c6'),
+              ('a2', 'a4'),
+              #('c7', 'c5'),
+              #('d5', 'c6'),
+              #('h4', 'b4'),
              ]
     a = Game()
     for i in moves1:
-        a.move(*i, alpha=True)
         print("\n\n\n\n")
+        a.move(*i, alpha=True)
         print(a.to_move)
         print(str(a))
-    print(a.en_passant((4, 3), (5, 2)))
+    #print(a.to_move)
+    #print(a.en_passant((4, 3), (5, 2)))
 
 
