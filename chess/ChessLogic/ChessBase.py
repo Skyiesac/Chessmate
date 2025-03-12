@@ -99,6 +99,7 @@ class Game(object):
         take_piece  = self.get_piece(np)
         vld_move    = piece.valid_move(op, np)
         cint        = self.check_intersect(op, np)
+        print('hi----------------', vld_move)
         if piece.color != self.to_move or not cint or not vld_move:
             return False
         elif type(piece) == Pawn:
@@ -119,7 +120,7 @@ class Game(object):
             o0, o1 = np0(a[0]) , np0(a[1])
             t0, t1 = op[0], op[1]
             # Ensure endless loop doesn't occur #
-            if op[0] != np[0] and op[1] != np[1] and abs(o0) != abs(o1):
+            if a[0] != 0 and a[1] != 0 and abs(a[0]) != abs(a[1]):
                 return False
             while True:
                 t0 += o0; t1 += o1
@@ -177,7 +178,7 @@ class Game(object):
     def king_position(self, color):
         for i in range(0, 8):
             for j in range(0, 8):
-                if str(self.board[i][j]) == ('K' if color == 'white' else 'k'):
+                if str(self.board_array[i][j]) == ('K' if color == 'white' else 'k'):
                     return (i, j)
         return False
 
@@ -284,16 +285,17 @@ if __name__ == "__main__":
               ('e4', 'd5'),
               ('c6', 'b4'),
               ('a2', 'a4'),
-              #('c7', 'c5'),
-              #('d5', 'c6'),
-              #('h4', 'b4'),
+              ('c7', 'c5'),
+              ('d5', 'c6'),
+              ('d8', 'd2'), # White should be in Check
              ]
     a = Game()
     for i in moves1:
         print("\n\n\n\n")
-        a.move(*i, alpha=True)
+        print(a.move(*i, alpha=True))
         print(a.to_move)
         print(str(a))
+    #print(a.is_check('white'))
     #print(a.to_move)
     #print(a.en_passant((4, 3), (5, 2)))
 
