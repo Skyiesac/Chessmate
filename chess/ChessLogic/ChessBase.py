@@ -272,12 +272,18 @@ if __name__ == "__main__":
               ('g1', 'f3'),
               ('b8', 'c6'),
               ('f1', 'b5'),
-              ('f1', 'b5'),
+              ('b7', 'b5'), #False, invalid move
+              ('d7', 'd5'),
+              ('e4', 'd5'),
+              ('c6', 'b4'),
+              ('c7', 'c5'),
              ]
     a = Game()
     for i in moves1:
+        a.move(*i, alpha=True)
         print("\n\n\n\n")
         print(a.to_move)
         print(str(a))
-        a.move(*i, alpha=True)
+    print(a.en_passant((4, 3), (5, 2)))
+
 
