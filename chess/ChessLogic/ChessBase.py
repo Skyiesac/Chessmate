@@ -10,6 +10,12 @@ def np0(n):
     elif n > 0: return  1
     else:       return  0
 
+def pair_add(t1, t2):
+    return (t1[0] + t2[0], t1[1] + t2[1])
+
+def pair_average(t1, t2):
+    return ((t1[0] + t2[0]) // 2, (t1[1] + t2[1]) // 2)
+
 def tupadd(t1, t2):
     return tuple(t1[x] + t2[x] for x in range(0, len(t1)))
 
@@ -48,45 +54,55 @@ class Game(object):
         new_arr = []
         for i in '123456789':
             from_string = from_string.replace(i, "-"*int(i))
-        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")][::-1]
+        return [[cls.piece_factory(x) for x in y] for y in from_string.split("/")][::-1]
 
 #--------------_METHODS_--------------------------------#
     def reset(self):
         self.board_array = self.arr_from(self.default_board)
-        self.moves_arr = []
-        self.to_move = 'white'
+        self.moves_arr   = []
+        self.to_move     = 'white'
 
     def get_piece(self, pos, alpha=False):
         if alpha:
             return self.get_piece(self.alpha_translate(pos))
         return self.board_array[pos[0]][pos[1]]
 
-    def move_piece(self, op, np, alpha=False):
-        if alpha:
-            return self.move_piece(self.alpha_translate(op), self.alpha_translate(np))
-        else:
-            if not self.valid_move(op, np):
-                return False
-            self.board_array[np[0]][np[1]] = self.get_piece(op)
-            self.board_array[op[0]][op[1]] = Empty('empty')
-            self.moves_arr.append(self.tuple_translate(op) + self.tuple_translate(np))
-            self.to_move = 'white' if self.to_move == 'black' else 'black'
-            return True
-
-    def valid_move(self, op, np):
+    # ONLY TO BE USED INTERNALLY, USE `move` FOR EXTERNAL USE
+    def internal_move(self, op, np, en_pass=False, promo=False):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
-        a = [
-            (type(piece) != Empty and piece.color == self.to_move),
-            (self.vldm(piece, take_piece, op, np )),
-            (self.check_intersect( op, np ))
-        ]
-        print(a)
-        return all(a)
+        self.moves_arr.append((op, np, str(piece), str(take_piece)))
+        self.board_array[np[0]][np[1]] = self.get_piece(op)
+        self.board_array[op[0]][op[1]] = Empty('empty')
+        self.to_move = 'white' if self.to_move == 'black' else 'black'
+        return self.to_move
 
-    def vldm(self, piece, take_piece, op, np):
-        return piece.valid_move(op, np) \
-           and (type(piece) != Pawn or self.pawn_validate(piece, take_piece, op, np))
+    def move(self, op, np, move=True, alpha=False):
+        if alpha:
+            return self.move(self.alpha_translate(op), self.alpha_translate(np), move=move, alpha=False)
+        piece       = self.get_piece(op)
+        take_piece  = self.get_piece(np)
+        vld_move    = piece.valid_move(op, np)
+        cint        = self.check_intersect(op, np)
+        if type(piece) == Empty or not cint or not vld_move:
+            return False
+        elif type(piece) == Pawn:
+            en_pass  = self.en_passant(op, np)
+            vld_move = (vld_move and (self.pawn_validate(piece, take_piece, op, np) or en_pass))
+            return vld_move and (not move or self.internal_move(op, np, en_pass=en_pass))
+        else:
+            return vld_move and (not move or self.internal_move(op, np))
+
+        #if type(piece) == Empty:
+        #    return False
+        #elif type(piece) == Pawn:
+        #    if 
+        #elif not 
+        #    return False
+        #return (move and self.internal_move(op, np, en_pass=en_pass)) or True
+
+    def validate_move(self, op, np, alpha=False):
+        return self.move(op, np, move=False, alpha=alpha)
 
     def check_intersect(self, op, np):
         piece       = self.get_piece(op)
@@ -95,6 +111,9 @@ class Game(object):
             a      = rrun(op, np)
             o0, o1 = np0(a[0]) , np0(a[1])
             t0, t1 = op[0], op[1]
+            # Ensure endless loop doesn't occur #
+            if op[0] != np[0] and op[1] != np[1] and abs(o0) != abs(o1):
+                return False
             while True:
                 t0 += o0; t1 += o1
                 if t0 == np[0] and t1 == np[1]:
@@ -117,14 +136,53 @@ class Game(object):
         else:
             return False
 
-    def en_passant(self, piece, take_piece, op, np):
+    def undo_last_move(self):
+        if len(self.moves_arr) <= 0:
+            return False
+        else:
+            a = self.moves_arr.pop()
+            self.board_array[a[0][0]][a[0][1]] = self.piece_factory(a[2])
+            self.board_array[a[1][0]][a[1][1]] = self.piece_factory(a[3])
+            self.to_move = 'white' if self.to_move == 'black' else 'black'
+            return a
+
+    def en_passant(self, op, np):
+        if len(self.moves_arr) >= 1 and type(self.get_piece(op)) == Pawn:
+            a = rrun(op, np, nosign=True)
+            if a[0] == 1 and a[1] == 1:
+                last_move = self.moves_arr[-1]
+                mid_point = pair_average(last_move[0], last_move[1])
+                if last_move[2].lower() == 'p' and mid_point == np:
+                    return mid_point
+        return False
+
+    def promotion(self, op, np):
         pass
 
     def string_from(self):
         pass
     
-    def is_check(self):
-        pass
+    def put_into_check(self, op, np):
+        c = self.to_move
+        self.internal_move(op, np)
+        return (self.is_check(c) and self.undo_last_move())
+
+    def king_position(self, color):
+        for i in range(0, 8):
+            for j in range(0, 8):
+                if str(self.board[i][j]) == ('K' if color == 'white' else 'k'):
+                    return (i, j)
+        return False
+
+    def is_check(self, color=None):
+        if color == None:
+            color = self.to_move
+        kpos = self.king_position(color)
+        for i in range(0, 8):
+            for j in range(0, 8):
+                if self.validate_move((i, j), kpos):
+                    return True
+        return False
 
     def is_checkmate(self):
         pass
@@ -221,13 +279,5 @@ if __name__ == "__main__":
         print("\n\n\n\n")
         print(a.to_move)
         print(str(a))
-        a.move_piece(*i, alpha=True)
-    #print(a.check_intersect(  (0, 0), (0, 5)  ))
-    #print(a.check_intersect(  (0, 1), (2, 2)  ))
-    #print(a.check_intersect(  (0, 0), (0, 1)  ))
-    #print(a.check_intersect(  (0, 0), (1, 0)  ))
-    #print(a.check_intersect(  (0, 2), (3, 4)  ))
-    #print(str(a))
-    #print(a.get_piece('h8', alpha=True))
-    #print(a.check_intersect((0, 0), (0, 5)))
+        a.move(*i, alpha=True)
 
