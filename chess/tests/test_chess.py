@@ -5,16 +5,16 @@ from ..ChessLogic.ChessBase import *
 #########################
 ###  0 1 2 3 4 5 6 7  ###
 #-----------------------#
-# 0  r n b k q b n r  0 #
-# 1  p p p p p p p p  1 #
-# 2  - - - - - - - -  2 #
-# 3  - - - - - - - -  3 #
-# 4  - - - - - - - -  4 #
-# 5  - - - - - - - -  5 #
-# 6  P P P P P P P P  6 #
-# 7  R N B K Q B N R  7 #
+# 8  R - B K Q B N R  7 #
+# 7  P P P P - P P P  6 #
+# 6  - - N - - - - -  5 #
+# 5  - b - - P - - -  4 #
+# 4  - - - - p - - -  3 #
+# 3  - - - - - n - -  2 #
+# 2  p p p p - p p p  1 #
+# 1  r n b k q - - r  0 #
 #-----------------------#
-###  0 1 2 3 4 5 6 7  ###
+###  A B C D E F G H  ###
 #########################
 
 class ChessLogicTestCase(TestCase):
@@ -39,6 +39,9 @@ class ChessLogicTestCase(TestCase):
         self.assertEqual(False , self.g.check_intersect(  (0, 0), (0, 1)  ))
         self.assertEqual(False , self.g.check_intersect(  (0, 0), (1, 0)  ))
         self.assertEqual(False , self.g.check_intersect(  (0, 2), (3, 4)  ))
+        self.assertEqual(True  , self.g.check_intersect(  (6, 4), (4, 4)  ))
+        self.assertEqual(True  , self.g.check_intersect(  (6, 4), (5, 4)  ))
+        self.assertEqual(False , self.g.check_intersect(  (6, 4), (6, 4)  ))
 
     def test_pawn(self):
         self.g.reset()

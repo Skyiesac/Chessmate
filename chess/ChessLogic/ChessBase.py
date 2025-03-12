@@ -76,9 +76,11 @@ class Game(object):
     def valid_move(self, op, np):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
-        return all([(type(piece) != Empty and piece.color == self.to_move),
-                    (self.vldm(       piece, take_piece, op, np )),
-                    (self.check_intersect( op, np ))])
+        a = [(type(piece) != Empty and piece.color == self.to_move),
+                    (self.vldm(piece, take_piece, op, np )),
+                    (self.check_intersect( op, np ))]
+        print(a)
+        return all(a)
 
     def vldm(self, piece, take_piece, op, np):
         return piece.valid_move(op, np) \
@@ -184,7 +186,7 @@ class Pawn(Piece):
     # Pawn move validation is handled specifically by 'Game'.
     rep='p'
     def valid_move(self, op, np):
-        a = rrun(op, np, nosign=True)
+        a = rrun(op, np)
         return (self.color == 'black' and a[0] < 0) \
             or (self.color == 'white' and a[0] > 0)
 
@@ -201,6 +203,8 @@ class Empty(Piece):
 if __name__ == "__main__":
     moves1 = [ ('e2', 'e4'),
                ('e7', 'e5'),
+               ('g1', 'f3'),
+               ('b8', 'c6'),
                ('e2', 'e4') ]
     a = Game()
     for i in moves1:
