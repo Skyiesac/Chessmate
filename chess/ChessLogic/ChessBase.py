@@ -90,14 +90,15 @@ class Game(object):
         self.to_move = 'white' if self.to_move == 'black' else 'black'
         return self.to_move
 
-    def move(self, op, np, move=True, alpha=False):
-        if alpha:
-            return self.move(self.alpha_translate(op), self.alpha_translate(np), move=move, alpha=False)
+    def move(self, op, np, move=True, alpha=False, ignore_color=False):
+        if alpha: return self.move(self.alpha_translate(op), self.alpha_translate(np), move=move, alpha=False)
+
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
         vld_move    = piece.valid_move(op, np)
         cint        = self.check_intersect(op, np)
-        if piece.color != self.to_move or not cint or not vld_move:
+        color_val   = piece.color != Empty or (not ignore_color and piece.color != self.to_move)
+        if color_val == Empty or not cint or not vld_move:
             return False
         elif type(piece) == Pawn:
             en_pass  = self.en_passant(op, np)
@@ -106,8 +107,8 @@ class Game(object):
         else:
             return vld_move and (not move or self.internal_move(op, np))
 
-    def validate_move(self, op, np, alpha=False):
-        return self.move(op, np, move=False, alpha=alpha)
+    def validate_move(self, op, np, alpha=False, ignore_color=False):
+        return self.move(op, np, move=False, alpha=alpha, ignore_color=ignore_color)
 
     def check_intersect(self, op, np):
         piece       = self.get_piece(op)
@@ -183,14 +184,13 @@ class Game(object):
         if color == None:
             color = self.to_move
         kpos = self.king_position(color)
-        self.to_move = color; self.toggle_color()
         for i in range(0, 8):
             for j in range(0, 8):
-                if self.validate_move((i, j), kpos):
+                if self.validate_move((i, j), kpos, ignore_color=True):
                     return True
         return False
 
-    def toggle_color(self, color=None):
+    def toggle_color(self):
         self.to_move = 'white' if self.to_move == 'black' else 'black'
 
     def is_checkmate(self):
@@ -297,6 +297,7 @@ if __name__ == "__main__":
         print(a.to_move)
         print(str(a))
     print(a.is_check('white'))
+    print(a.is_check('black'))
     #print(a.to_move)
     #print(a.en_passant((4, 3), (5, 2)))
 
