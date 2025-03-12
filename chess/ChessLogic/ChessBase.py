@@ -164,12 +164,12 @@ class King(Piece):
 class Queen(Piece):
     rep='q'
     def valid_move(self, op, np):
-        return super.verify_diag(op, np) or super.verify_vh(op, np)
+        return super().verify_diag(op, np) or super().verify_vh(op, np)
 
 class Bishop(Piece):
     rep='b'
     def valid_move(self, op, np):
-        return super.verify_diag(op, np)
+        return super().verify_diag(op, np)
 
 class Knight(Piece):
     rep='n'
@@ -180,7 +180,7 @@ class Knight(Piece):
 class Rook(Piece):
     rep='r'
     def valid_move(self, op, np):
-        return super.verify_vh(op, np)
+        return super().verify_vh(op, np)
 
 class Pawn(Piece):
     # Pawn move validation is handled specifically by 'Game'.
@@ -201,11 +201,14 @@ class Empty(Piece):
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
-    moves1 = [ ('e2', 'e4'),
-               ('e7', 'e5'),
-               ('g1', 'f3'),
-               ('b8', 'c6'),
-               ('e2', 'e4') ]
+    moves1 = [
+              ('e2', 'e4'),
+              ('e7', 'e5'),
+              ('g1', 'f3'),
+              ('b8', 'c6'),
+              ('f1', 'b5'),
+              ('f1', 'b5'),
+             ]
     a = Game()
     for i in moves1:
         print("\n\n\n\n")
