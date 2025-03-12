@@ -35,7 +35,7 @@ class ChessLogicTestCase(TestCase):
                    ('b8', 'c6'),
                    ('f1', 'b5'), ]
         for i in moves1:
-            self.g.move_piece(*i, alpha=True)
+            self.g.move(*i, alpha=True)
 
         self.assertEqual(roy_g, str(self.g))
 
@@ -52,18 +52,18 @@ class ChessLogicTestCase(TestCase):
 
     def test_intersect(self):
         self.g.reset()
-        self.assertEqual(False , self.g.check_intersect(  (0, 0), (0, 5)  ))
-        self.assertEqual(True  , self.g.check_intersect(  (0, 1), (2, 2)  ))
-        self.assertEqual(False , self.g.check_intersect(  (0, 0), (0, 1)  ))
-        self.assertEqual(False , self.g.check_intersect(  (0, 0), (1, 0)  ))
-        self.assertEqual(False , self.g.check_intersect(  (0, 2), (3, 4)  ))
-        self.assertEqual(True  , self.g.check_intersect(  (6, 4), (4, 4)  ))
-        self.assertEqual(True  , self.g.check_intersect(  (6, 4), (5, 4)  ))
-        self.assertEqual(False , self.g.check_intersect(  (6, 4), (6, 4)  ))
+        self.assertFalse(self.g.check_intersect(  (0, 0), (0, 5)  ))
+        self.assertTrue( self.g.check_intersect(  (0, 1), (2, 2)  ))
+        self.assertFalse(self.g.check_intersect(  (0, 0), (0, 1)  ))
+        self.assertFalse(self.g.check_intersect(  (0, 0), (1, 0)  ))
+        self.assertFalse(self.g.check_intersect(  (0, 2), (3, 4)  ))
+        self.assertTrue( self.g.check_intersect(  (6, 4), (4, 4)  ))
+        self.assertTrue( self.g.check_intersect(  (6, 4), (5, 4)  ))
+        self.assertFalse(self.g.check_intersect(  (6, 4), (6, 4)  ))
 
     def test_pawn(self):
         self.g.reset()
-        self.assertEqual(True , self.g.move_piece('e2', 'e4', alpha=True))
+        self.assertTrue(self.g.move('e2', 'e4', alpha=True))
 
     def test_queen(self):
         pass
