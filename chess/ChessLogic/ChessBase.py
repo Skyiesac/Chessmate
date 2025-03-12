@@ -20,7 +20,7 @@ def tupadd(t1, t2):
 class Game(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
-    def __init__(self, game_info=None, moves_arr=[], board_str=None, to_move='white'):
+    def __init__(self, board_str=None, moves_arr=[], game_info=None, to_move='white'):
         self.board_array    = self.arr_from(board_str if board_str else self.default_board)
         self.moves_arr      = moves_arr
         self.game_info      = game_info
@@ -30,7 +30,7 @@ class Game(object):
     @staticmethod
     def piece_factory(chp):
         dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn, '-': Empty}
-        return dt[chp.lower()]('white' if (chp.islower()) else 'black')
+        return dt[chp.lower()]('white' if (chp.isupper()) else 'black')
 
     @staticmethod
     def alpha_translate(pos):
@@ -48,7 +48,7 @@ class Game(object):
         new_arr = []
         for i in '123456789':
             from_string = from_string.replace(i, "-"*int(i))
-        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")]
+        return [[Game.piece_factory(x) for x in y] for y in from_string.split("/")][::-1]
 
 #--------------_METHODS_--------------------------------#
     def reset(self):
@@ -76,9 +76,11 @@ class Game(object):
     def valid_move(self, op, np):
         piece       = self.get_piece(op)
         take_piece  = self.get_piece(np)
-        a = [(type(piece) != Empty and piece.color == self.to_move),
-                    (self.vldm(piece, take_piece, op, np )),
-                    (self.check_intersect( op, np ))]
+        a = [
+            (type(piece) != Empty and piece.color == self.to_move),
+            (self.vldm(piece, take_piece, op, np )),
+            (self.check_intersect( op, np ))
+        ]
         print(a)
         return all(a)
 
@@ -104,13 +106,19 @@ class Game(object):
 
     def pawn_validate(self, piece, take_piece, op, np):
         a = rrun(op, np, nosign=True)
-        if a[0] == 1:
-            pass
+        lt = type(take_piece)
+        if   a[0] == 1:
+            if type(take_piece) == Empty:
+                return a[1] == 0
+            else:
+                return a[1] == 1 and piece.color != take_piece.color
         elif a[0] == 2:
-            return type(take_piece) == Empty \
-               and op[0] == (1 if piece.color == 'white' else 6)
+            return type(take_piece) == Empty and op[0] == (1 if piece.color == 'white' else 6)
         else:
             return False
+
+    def en_passant(self, piece, take_piece, op, np):
+        pass
 
     def string_from(self):
         pass
@@ -148,7 +156,7 @@ class Piece(object):
         return abs(op[0] - np[0]) == abs(op[1] - np[1])
 
     def __repr__(self):
-        return self.rep if self.color == 'white' else self.rep.upper()
+        return self.rep.upper() if self.color == 'white' else self.rep.lower()
 
     def __str__(self):
         return self.__repr__()
@@ -187,8 +195,7 @@ class Pawn(Piece):
     rep='p'
     def valid_move(self, op, np):
         a = rrun(op, np)
-        return (self.color == 'black' and a[0] < 0) \
-            or (self.color == 'white' and a[0] > 0)
+        return (self.color == 'black' and a[0] < 0) or (self.color == 'white' and a[0] > 0)
 
 
 class Empty(Piece):

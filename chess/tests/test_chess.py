@@ -2,24 +2,42 @@
 from django.test import TestCase
 from ..ChessLogic.ChessBase import *
 
-#########################
-###  0 1 2 3 4 5 6 7  ###
-#-----------------------#
-# 8  R - B K Q B N R  7 #
-# 7  P P P P - P P P  6 #
-# 6  - - N - - - - -  5 #
-# 5  - b - - P - - -  4 #
-# 4  - - - - p - - -  3 #
-# 3  - - - - - n - -  2 #
-# 2  p p p p - p p p  1 #
-# 1  r n b k q - - r  0 #
-#-----------------------#
-###  A B C D E F G H  ###
-#########################
+#-------------------------#-
+#    RUY LOPEZ            #-
+#-------------------------#-
+
+###########################-
+####  0 1 2 3 4 5 6 7  ####-
+##-----------------------##-
+## 8  r - b k q b n r  7 ##-
+## 7  p p p p - p p p  6 ##-
+## 6  - - n - - - - -  5 ##-
+## 5  - B - - p - - -  4 ##-
+## 4  - - - - P - - -  3 ##-
+## 3  - - - - - N - -  2 ##-
+## 2  P P P P - P P P  1 ##-
+## 1  R N B K Q - - R  0 ##-
+##-----------------------##-
+####  A B C D E F G H  ####-
+###########################-
 
 class ChessLogicTestCase(TestCase):
     def setUp(self):
         self.g = Game()
+
+    def test_ruy_lopez(self):
+        ruy_lopez_str = "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R"
+        roy_g = str(Game(ruy_lopez_str))
+        self.g.reset()
+        moves1 = [ ('e2', 'e4'),
+                   ('e7', 'e5'),
+                   ('g1', 'f3'),
+                   ('b8', 'c6'),
+                   ('f1', 'b5'), ]
+        for i in moves1:
+            self.g.move_piece(*i, alpha=True)
+
+        self.assertEqual(roy_g, str(self.g))
 
     def test_alpha_tuple_translate(self):
         self.g.reset()
@@ -51,8 +69,5 @@ class ChessLogicTestCase(TestCase):
         pass
         
     def tearDown(self):
-        pass
-
-    def test_game(self):
         pass
 
