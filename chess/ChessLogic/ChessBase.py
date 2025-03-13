@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-
-from .helperf import ind, seti, str_b, visp, pair_add, lmake
-from .helperf import remove_out_of_range, points_on_line, sign
+from .HelperFunctions import ind, seti, str_b, visp, pair_add, lmake
+from .HelperFunctions import remove_out_of_range, points_on_line, sign
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]

@@ -1,4 +1,4 @@
 #!/usr/bin/python3
 
-from .ChessBase import *
-from .helperf   import *
+from .ChessBase       import *
+from .HelperFunctions import *

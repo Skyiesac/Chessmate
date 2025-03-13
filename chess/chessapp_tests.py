@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-from Helper   import ind, seti, str_b, visp, pair_add, lmake
-from Helper   import remove_out_of_range, points_on_line, sign
-from NewChess import ChessGame, vm_list
+
+from ChessLogic.Helper    import ind, seti, str_b, visp, pair_add, lmake
+from ChessLogic.Helper    import remove_out_of_range, points_on_line, sign
+from ChessLogic.ChessBase import ChessGame, vm_list
 
 def test_points_on_line():
     a = points_on_line((3, 3), (0, 6))
