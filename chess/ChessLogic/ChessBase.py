@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from .Helper import ind, seti, str_b, visp, pair_add, lmake
-from .Helper import remove_out_of_range, points_on_line, sign
+from Helper import ind, seti, str_b, visp, pair_add, lmake
+from Helper import remove_out_of_range, points_on_line, sign
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
@@ -128,7 +128,7 @@ class ChessGame(object):
             if b[0] == 1:
                 return (b[1] == 1 and self.g(np) != '-') or (b[1] == 0 and self.g(np) == '-')
             elif b[0] == 2:
-                return (op[0] == 1 and self.g(op) == 'P') or (op[0] == 6 and self.g(op) == 'p')
+                return (op[0] == 1 and self.g(np) == '-') or (op[0] == 6 and self.g(np) == '-')
         return False
     def move(self, op, np=None):
         if np == None:
