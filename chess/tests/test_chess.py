@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from django.test import TestCase
-from ..ChessLogic.ChessBase import ChessGame
+from chess.ChessLogic.ChessBase import ChessGame
+#from ..ChessLogic import ChessBase.ChessGame
 
 #-------------------------#-
 #    RUY LOPEZ            #-
