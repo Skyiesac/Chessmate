@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from django.test import TestCase
-from ..ChessLogic.ChessBase import *
+from ..ChessLogic.ChessBase import ChessGame
 
 #-------------------------#-
 #    RUY LOPEZ            #-
@@ -24,7 +24,7 @@ from ..ChessLogic.ChessBase import *
 
 class ChessLogicTestCase(TestCase):
     def setUp(self):
-        self.g = Game()
+        self.g = ChessGame()
         self.code_dict = {'T': self.assertTrue, 'F': self.assertFalse}
         self.cases = [
             ('Te2e4', 'Te7e5', 'Tg1f3', 'Tb8c6', 'Tf1b5', 'Fb7b5', 'Td7d5', 'Te4d5', 'Tc6b4', 'Tc7c5'),
@@ -32,15 +32,15 @@ class ChessLogicTestCase(TestCase):
 
     def test_ruy_lopez(self):
         ruy_lopez_str = "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R"
-        roy_g = str(Game(ruy_lopez_str))
+        roy_g = str(ChessGame(ruy_lopez_str))
         self.g.reset()
-        moves1 = [ ('e2', 'e4'),
-                   ('e7', 'e5'),
-                   ('g1', 'f3'),
-                   ('b8', 'c6'),
-                   ('f1', 'b5'), ]
+        moves1 = [ 'e2e4',
+                   'e7e5',
+                   'g1f3',
+                   'b8c6',
+                   'f1b5', ]
         for i in moves1:
-            self.g.move(*i, alpha=True)
+            self.g.move(i)
 
         self.assertEqual(roy_g, str(self.g))
 
@@ -48,14 +48,14 @@ class ChessLogicTestCase(TestCase):
         for _case in self.cases:
             self.g.reset()
             for j in _case:
-                self.code_dict[j[0]](self.g.move(j[1:3], j[3:], alpha=True))
+                self.code_dict[j[0]](self.g.move(j[1:]))
 
     def test_pawn(self):
         self.g.reset()
-        self.assertTrue(self.g.move('e2', 'e4', alpha=True))
-        self.assertTrue(self.g.move('e7', 'e5', alpha=True))
+        self.assertTrue(self.g.move('e2e4'))
+        self.assertTrue(self.g.move('e7e5'))
 
-    def test_alpha_tuple_translate(self):
+    def test_alpha_translate(self):
         self.g.reset()
         tr1 = 'abcdefgh'
         tr2 = '12345678'
@@ -63,19 +63,19 @@ class ChessLogicTestCase(TestCase):
             for j in range(0, 8):
                 tuple = (i, j)
                 alpha = tr1[j] + tr2[i]
-                self.assertEqual(tuple, self.g.alpha_translate(alpha))
-                self.assertEqual(alpha, self.g.tuple_translate(tuple))
+                self.assertEqual(tuple, self.g.translate(alpha))
+                self.assertEqual(alpha, self.g.translate(tuple))
 
     def test_intersect(self):
         self.g.reset()
-        self.assertFalse(self.g.check_intersect(  (0, 0), (0, 5)  ))
-        self.assertTrue( self.g.check_intersect(  (0, 1), (2, 2)  ))
-        self.assertFalse(self.g.check_intersect(  (0, 0), (0, 1)  ))
-        self.assertFalse(self.g.check_intersect(  (0, 0), (1, 0)  ))
-        self.assertFalse(self.g.check_intersect(  (0, 2), (3, 4)  ))
-        self.assertTrue( self.g.check_intersect(  (6, 4), (4, 4)  ))
-        self.assertTrue( self.g.check_intersect(  (6, 4), (5, 4)  ))
-        self.assertFalse(self.g.check_intersect(  (6, 4), (6, 4)  ))
+        self.assertFalse(self.g.direct_attack(  (0, 0), (0, 5)  ))
+        self.assertTrue( self.g.direct_attack(  (0, 1), (2, 2)  ))
+        self.assertFalse(self.g.direct_attack(  (0, 0), (0, 1)  ))
+        self.assertFalse(self.g.direct_attack(  (0, 0), (1, 0)  ))
+        self.assertFalse(self.g.direct_attack(  (0, 2), (3, 4)  ))
+        self.assertTrue( self.g.direct_attack(  (6, 4), (4, 4)  ))
+        self.assertTrue( self.g.direct_attack(  (6, 4), (5, 4)  ))
+        self.assertFalse(self.g.direct_attack(  (6, 4), (6, 4)  ))
 
     def test_queen(self):
         pass

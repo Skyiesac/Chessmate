@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from Helper import ind, seti, str_b, visp, pair_add, lmake
-from Helper import remove_out_of_range, points_on_line, sign
+from .Helper import ind, seti, str_b, visp, pair_add, lmake
+from .Helper import remove_out_of_range, points_on_line, sign
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
@@ -69,6 +69,7 @@ class ChessGame(object):
         self.s(op, '-')
         self.moves.append({'board': old_board, 'op': op, 'np': np})
         self.toggle_move()
+        return True
     def puts_check(self, op, np):
         c = 'white' if self.g(op) == self.g(op).upper() else 'black'
         self.internal_move(op, np)
@@ -152,7 +153,6 @@ class ChessGame(object):
                             if self.valid_move((ia, ja), (kb, lb)):
                                 return True
         return False
-
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
