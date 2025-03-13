@@ -1,303 +1,185 @@
 #!/usr/bin/python3
 
-#--------------_HELPER_FUNCTIONS_-----------------------#
-def rrun(op, np, nosign=False):
-    if nosign: return (abs(np[0] - op[0]), abs(np[1] - op[1]))
-    else:      return (    np[0] - op[0] ,     np[1] - op[1])
+from Helper import ind, seti, str_b, visp, pair_add, lmake
+from Helper import remove_out_of_range, points_on_line, sign
 
-def np0(n):
-    if   n < 0: return -1
-    elif n > 0: return  1
-    else:       return  0
+l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
+KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
+KNIGHT_MOVES = [(-1, -2), (1, -2), (-1, 2), (1, 2), (-2, -1), (2, -1), (-2, 1), (2, 1)]
+BISHOP_MOVES = []
+for i in l: BISHOP_MOVES += [(i, i), (-i, i), (i, -i), (-i, -i) ]
+ROOK_MOVES   = [(0, x) for x in l] +  [(x, 0) for x in l]
+QUEEN_MOVES  = BISHOP_MOVES + ROOK_MOVES
+MOVE_DICT    = {'k': KING_MOVES, 'q': QUEEN_MOVES, 'b': BISHOP_MOVES, 'r': ROOK_MOVES, 'n': KNIGHT_MOVES}
 
-def pair_add(t1, t2):
-    return (t1[0] + t2[0], t1[1] + t2[1])
+def vm_list(piece, pos):
+    if piece.lower() in MOVE_DICT:
+        l = lmake(pos, MOVE_DICT[piece.lower()])
+        return remove_out_of_range(l)
+    else:
+        return []
 
-def pair_average(t1, t2):
-    return ((t1[0] + t2[0]) // 2, (t1[1] + t2[1]) // 2)
-
-def tupadd(t1, t2):
-    return tuple(t1[x] + t2[x] for x in range(0, len(t1)))
-
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-class Game(object):
+class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-
-    def __init__(self, board_str=None, moves_arr=[], game_info=None, to_move='white'):
-        self.board_array    = self.arr_from(board_str if board_str else self.default_board)
-        self.moves_arr      = moves_arr
-        self.game_info      = game_info
-        self.to_move        = to_move
-
-#--------------_STATIC_METHODS_-------------------------#
-    @staticmethod
-    def piece_factory(chp):
-        dt = {'k': King, 'q': Queen, 'b': Bishop, 'n': Knight, 'r': Rook, 'p': Pawn, '-': Empty}
-        return dt[chp.lower()]('white' if (chp.isupper()) else 'black')
-
-    @staticmethod
-    def alpha_translate(pos):
-        move_dict = {'abcdefgh'[x]: x for x in range(0, 8) }
-        return (int(pos[1]) - 1), move_dict[pos[0].lower()]
-
-    @staticmethod
-    def tuple_translate(pos):
-        move_dict = {x: 'abcdefgh'[x] for x in range(0, 8) }
-        return move_dict[pos[1]] + str(pos[0] + 1)
-
-#--------------_CLASS_METHODS_--------------------------#
-    @classmethod
-    def arr_from(cls, from_string):
-        new_arr = []
+    def __init__(self, start_string=None, moves=[], to_move='white'):
+        self.board   = self.board_from_string(start_string)
+        self.moves   = []
+        self.to_move = to_move
+    def g(self, pos):
+        if type(pos) == str: return self.g(self.translate(pos))
+        else: return self.board[pos[0]][pos[1]]
+    def s(self, pos, g): self.board[pos[0]][pos[1]] = g
+    def toggle_move(self): self.to_move = self.oppo()
+    def oppo(self): return 'white' if self.to_move == 'black' else 'black'
+    def translate(self, l):
+        if type(l) == str: return (int(l[1]) - 1), 'abcdefgh'.index(l[0].lower())
+        else:              return 'abcdefgh'[l[1]] + str(l[0] + 1)
+    def board_from_string(self, from_string=None):
+        if from_string == None:
+            return self.board_from_string(self.default_board)
         for i in '123456789':
             from_string = from_string.replace(i, "-"*int(i))
-        return [[cls.piece_factory(x) for x in y] for y in from_string.split("/")][::-1]
-
-#--------------_METHODS_--------------------------------#
+        from_string = from_string.replace("\n", "/")
+        return [[x for x in y] for y in from_string.split("/")][::-1]
     def reset(self):
-        self.board_array = self.arr_from(self.default_board)
-        self.moves_arr   = []
+        self.board       = self.board_from_string()
+        self.moves   = []
         self.to_move     = 'white'
-
-    def get_piece(self, pos, alpha=False):
-        if alpha:
-            return self.get_piece(self.alpha_translate(pos))
-        return self.board_array[pos[0]][pos[1]]
-
-    def set_piece(self, pos, c, alpha=False):
-        if alpha:
-            self.get_piece(self.alpha_translate(pos))
-        elif type(c) == str:
-            self.board_array[pos[0]][pos[1]] = self.piece_factory(c)
-        else:
-            self.board_array[pos[0]][pos[1]] = c
-
-    # ONLY TO BE USED INTERNALLY, USE `move` FOR EXTERNAL USE
-    def internal_move(self, op, np, en_pass=False, promo=False):
-        if en_pass:
-            self.moves_arr.append((op, np, en_pass, str(self.get_piece(op)), str(self.get_piece(en_pass)), 'en_pass'))
-            self.set_piece(en_pass, '-')
-        elif promo:
-            pass
-        else:
-            self.moves_arr.append((op, np, str(self.get_piece(op)), str(self.get_piece(np))))
-
-        self.set_piece(np, self.get_piece(op))
-        self.set_piece(op, '-')
-        self.to_move = 'white' if self.to_move == 'black' else 'black'
-        return self.to_move
-
-    def move(self, op, np, move=True, alpha=False, ignore_color=False):
-        if alpha: return self.move(self.alpha_translate(op), self.alpha_translate(np), move=move, alpha=False)
-
-        piece       = self.get_piece(op)
-        take_piece  = self.get_piece(np)
-        vld_move    = piece.valid_move(op, np)
-        cint        = self.check_intersect(op, np)
-        color_val   = piece.color != Empty or (not ignore_color and piece.color != self.to_move)
-        if color_val == Empty or not cint or not vld_move:
-            return False
-        elif type(piece) == Pawn:
-            en_pass  = self.en_passant(op, np)
-            vld_move = (vld_move and (self.pawn_validate(piece, take_piece, op, np) or en_pass))
-            return vld_move and (not move or self.internal_move(op, np, en_pass=en_pass))
-        else:
-            return vld_move and (not move or self.internal_move(op, np))
-
-    def validate_move(self, op, np, alpha=False, ignore_color=False):
-        return self.move(op, np, move=False, alpha=alpha, ignore_color=ignore_color)
-
-    def check_intersect(self, op, np):
-        piece       = self.get_piece(op)
-        take_piece  = self.get_piece(np)
-        if type(piece) != Knight:
-            a      = rrun(op, np)
-            o0, o1 = np0(a[0]) , np0(a[1])
-            t0, t1 = op[0], op[1]
-            # Ensure endless loop doesn't occur #
-            if a[0] != 0 and a[1] != 0 and abs(a[0]) != abs(a[1]):
-                return False
-            while True:
-                t0 += o0; t1 += o1
-                if t0 == np[0] and t1 == np[1]:
-                    break
-                elif type(self.get_piece((t0, t1))) != Empty:
-                    return False
-        return piece.color != take_piece.color
-
-
-    def pawn_validate(self, piece, take_piece, op, np):
-        a = rrun(op, np, nosign=True)
-        lt = type(take_piece)
-        if   a[0] == 1:
-            if type(take_piece) == Empty:
-                return a[1] == 0
-            else:
-                return a[1] == 1 and piece.color != take_piece.color
-        elif a[0] == 2:
-            return type(take_piece) == Empty and op[0] == (1 if piece.color == 'white' else 6)
-        else:
-            return False
-
-    def undo_last_move(self):
-        if len(self.moves_arr) <= 0:
+    def str_board(self):
+        return "\n".join(["".join([str(x) for x in y]) for y in self.board][::-1])
+    def __str__(self):
+        return "\n".join(["".join([str(x) for x in y]) for y in self.board][::-1])
+    def undo_move(self):
+        if len(self.moves) <= 0:
             return False
         else:
-            a = self.moves_arr.pop()
-            self.board_array[a[0][0]][a[0][1]] = self.piece_factory(a[2])
-            self.board_array[a[1][0]][a[1][1]] = self.piece_factory(a[3])
-            self.to_move = 'white' if self.to_move == 'black' else 'black'
-            return a
-
-    def en_passant(self, op, np):
-        if len(self.moves_arr) >= 1 and type(self.get_piece(op)) == Pawn:
-            a = rrun(op, np, nosign=True)
-            if a[0] == 1 and a[1] == 1:
-                last_move = self.moves_arr[-1]
-                mid_point = pair_average(last_move[0], last_move[1])
-                if last_move[2].lower() == 'p' and mid_point == np:
-                    return last_move[1]
-        return False
-
-    def promotion(self, op, np):
-        pass
-
-    def string_from(self):
-        pass
-    
-    def put_into_check(self, op, np):
-        c = self.to_move
-        self.internal_move(op, np)
-        return (self.is_check(c) and self.undo_last_move())
-
+            last_move   = self.moves.pop()
+            self.board  = self.board_from_string(last_move['board'])
+            self.toggle_move()
+            return last_move
     def king_position(self, color):
         for i in range(0, 8):
             for j in range(0, 8):
-                if str(self.board_array[i][j]) == ('K' if color == 'white' else 'k'):
+                if self.board[i][j] == ('K' if color == 'white' else 'k'):
                     return (i, j)
         return False
-
-    def is_check(self, color=None):
-        if color == None:
-            color = self.to_move
+    def internal_move(self, op, np):
+        old_board = self.str_board()
+        self.s(np, self.g(op))
+        self.s(op, '-')
+        self.moves.append({'board': old_board, 'op': op, 'np': np})
+        self.toggle_move()
+    def puts_check(self, op, np):
+        c = 'white' if self.g(op) == self.g(op).upper() else 'black'
+        self.internal_move(op, np)
+        is_check = self.is_check(self.oppo())
+        self.undo_move()
+        return is_check
+    def gcolor(self, op):
+        f = self.g(op)
+        if f == '-':
+            return 'empty'
+        elif f == f.upper():
+            return 'white'
+        else:
+            return 'black'
+    def is_check(self, color):
         kpos = self.king_position(color)
-        for i in range(0, 8):
-            for j in range(0, 8):
-                if self.validate_move((i, j), kpos, ignore_color=True):
+        if not kpos:
+            return True
+        else:
+            for i in range(0, 8):
+                for j in range(0, 8):
+                    if self.gcolor((i, j)) != color:
+                        aj = (i, j)
+                        if self.direct_attack(aj, kpos):
+                            return True
+        return False
+    def ccolor(self, p, color):
+        if color == 'white': return p == p.upper()
+        else:                return p == p.lower()
+    def direct_attack(self, op, np):
+        piece = self.g(op).lower()
+        if piece == 'p':
+            if not self.valid_pawn_move(op, np):
+                return False
+        elif np not in vm_list(self.g(op), op):
+            return False
+        if piece != 'n':
+            a  = (np[0] - op[0], np[1] - op[1])
+            x1 = sign(a[0]); x2 = sign(a[1])
+            points = []
+            for i in range(1, max(abs(a[0]), abs(a[1]))):
+                if self.g(pair_add(op, (i*x1, i*x2))) != '-':
+                    return False
+        return self.gcolor(op) != self.gcolor(np)
+    def valid_move(self, op, np, check_color=True):
+        if not check_color or self.ccolor(self.g(op), self.to_move):
+            if self.g(op) != '-' and not self.puts_check(op, np):
+                if self.direct_attack(op, np):
                     return True
         return False
-
-    def toggle_color(self):
-        self.to_move = 'white' if self.to_move == 'black' else 'black'
-
-    def is_checkmate(self):
-        pass
-
-#--------------_SPECIAL_--------------------------------#
-
-    def __str__(self):
-        return "\n".join(["".join([str(x) for x in y]) for y in self.board_array][::-1])
-
-    #def board_from_arr
-
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------#
-
-class Piece(object):
-    rep='*'
-
-    def __init__(self, color):
-        self.color = color
-
-    @staticmethod
-    def verify_vh(op, np):
-        return (op[0] == np[0]) or (op[1] == np[1])
-
-    @staticmethod
-    def verify_diag(op, np):
-        return abs(op[0] - np[0]) == abs(op[1] - np[1])
-
-    def __repr__(self):
-        return self.rep.upper() if self.color == 'white' else self.rep.lower()
-
-    def __str__(self):
-        return self.__repr__()
-
-#------------------PIECES-----------------------------#
-
-class King(Piece):
-    rep='k'
-    def valid_move(self, op, np):
-        a = rrun(op, np, nosign=True)
-        return a[0] <= 1 and a[1] <= 1
-
-class Queen(Piece):
-    rep='q'
-    def valid_move(self, op, np):
-        return super().verify_diag(op, np) or super().verify_vh(op, np)
-
-class Bishop(Piece):
-    rep='b'
-    def valid_move(self, op, np):
-        return super().verify_diag(op, np)
-
-class Knight(Piece):
-    rep='n'
-    def valid_move(self, op, np):
-        a = rrun(op, np, nosign=True)
-        return 2 in a and 1 in a
-
-class Rook(Piece):
-    rep='r'
-    def valid_move(self, op, np):
-        return super().verify_vh(op, np)
-
-class Pawn(Piece):
-    # Pawn move validation is handled specifically by 'Game'.
-    rep='p'
-    def valid_move(self, op, np):
-        a = rrun(op, np)
-        return (self.color == 'black' and a[0] < 0) or (self.color == 'white' and a[0] > 0)
-
-
-class Empty(Piece):
-    rep='-'
-    def __init__(self, color):
-        self.color = 'empty'
-
-    def valid_move(self, op, np):
+    def valid_pawn_move(self, op, np):
+        correct_direction = -1 if self.g(op) == 'p' else 1
+        a = (np[0] - op[0], np[1] - op[1])
+        b = (abs(a[0]), abs(a[1]))
+        if sign(a[0]) == correct_direction:
+            if b[0] == 1:
+                return (b[1] == 1 and self.g(np) != '-') or (b[1] == 0 and self.g(np) == '-')
+            elif b[0] == 2:
+                return (op[0] == 1 and self.g(op) == 'P') or (op[0] == 6 and self.g(op) == 'p')
         return False
+    def move(self, op, np=None):
+        if np == None:
+            return self.move(self.translate(op[0:2]), self.translate(op[2:]))
+        else:
+            return self.valid_move(op, np) and self.internal_move(op, np)
+    def is_mate(self):
+        if not self.king_position(self.to_move):
+            return True
+        elif self.is_check(self.to_move) and not self.any_valid():
+            return True
+        else:
+            return False
+    def is_stalemate(self):
+        return not self.is_check(self.to_move) and not self.any_valid()
+    def any_valid(self):
+        for ia in range(0, 8):
+            for ja in range(0, 8):
+                if self.gcolor((ia, ja)) == self.to_move:
+                    for kb in range(0, 8):
+                        for lb in range(0, 8):
+                            if self.valid_move((ia, ja), (kb, lb)):
+                                return True
+        return False
+
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
     moves1 = [
-              ('e2', 'e4'),
-              ('e7', 'e5'),
-              ('g1', 'f3'),
-              ('b8', 'c6'),
-              ('f1', 'b5'),
-              ('b7', 'b5'), #False, invalid move
-              ('d7', 'd5'),
-              ('e4', 'd5'),
-              ('c6', 'b4'),
-              ('a2', 'a4'),
-              ('c7', 'c5'),
-              ('d5', 'c6'),
-              ('d8', 'd2'), # White should be in Check
+              'e2e4',
+              'e7e5',
+              'g1f3',
+              'b8c6',
+              'f1b5',
+              'b7b5', #False, invalid move
+              'd7d5',
+              'e4d5',
+              'c6b4',
+              #'a2a4',
+              #'c7c5',
+              #'d5c6',
+              #'d8d2', # White should be in Check
              ]
-    a = Game()
+    a = ChessGame()
     for i in moves1:
         print("\n\n\n\n")
-        print(a.move(*i, alpha=True))
+        print(a.move(i))
         print(a.to_move)
         print(str(a))
-    print(a.is_check('white'))
-    print(a.is_check('black'))
+    #print(a.is_check('white'))
+    #print(a.is_check('black'))
+    #print(a.is_checkmate('black'))
     #print(a.to_move)
     #print(a.en_passant((4, 3), (5, 2)))
 
