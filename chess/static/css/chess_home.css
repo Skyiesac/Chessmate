@@ -1,4 +1,25 @@
 
+body {
+  background-color: black;
+  color: white;
+}
 
-#board-* {
+.chess-board-cell {
+  color: rgb(0, 255, 0);
+  background-color: white;
+}
+/*td:nth-child(even) {*/
+    /*background-color: grey;*/
+/*}*/
+/*td:nth-child(2n) {*/
+    /*background-color: green;*/
+/*}*/
+
+
+.chess-board-white {
+  background-color: brown;
+}
+
+.chess-board-black {
+  background-color: grey;
 }

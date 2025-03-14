@@ -1,4 +1,26 @@
 
+// chess_url_image_base defined in chess_home.html, script (#load-image-z)
+
+let piece_dict = {
+    '-': 'empty',
+    'p':  'pawn',
+    'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king'
+};
+
+function lower(s) {
+    return s.toLowerCase();
+}
+
+function gcolor(s) {
+    if (s == '-') { return 'empty'; }
+    return lower(s) == s ? 'black' : 'white'
+}
+
+function piece_url(p) {
+    let color = gcolor(p);
+    return chess_url_image_base + color + '_' + piece_dict[lower(p)] + '.png';
+}
+
 function translate(y, x = null) {
     let ver = 'abcdefgh';
     if (typeof(y) == 'string' ) {
@@ -13,16 +35,19 @@ function get_square(y, x = null ) {
     return document.getElementById('board-'+y+'-'+x);
 }
 
-function populate_board(str_board) {
+function populate_board(ll) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            get_square(i+1, j+1).innerText = str_board[i][j];
+            let purl = piece_url( ll[i][j] );
+            get_square(i+1, j+1).innerHTML = '<img src="' + purl + '">';
         }
     }
 }
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    console.log(gcolor('k'));
     default_board = [];
     default_board.push("RNBQKBNR");
     default_board.push("PPPPPPPP");
@@ -37,6 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
     get_square('e4');
     populate_board(default_board);
     console.log(document.getElementById('board-1-8'));
-    console.log(a);
+    console.log(piece_url('k'));
 });
 
