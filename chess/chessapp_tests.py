@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-from ChessLogic.Helper    import ind, seti, str_b, visp, pair_add, lmake
-from ChessLogic.Helper    import remove_out_of_range, points_on_line, sign
-from ChessLogic.ChessBase import ChessGame, vm_list
+from ChessLogic.HelperFunctions import ind, seti, str_b, visp, pair_add, lmake
+from ChessLogic.HelperFunctions import remove_out_of_range, points_on_line, sign
+from ChessLogic.ChessBase       import ChessGame, vm_list
 
 def test_points_on_line():
     a = points_on_line((3, 3), (0, 6))
@@ -49,6 +49,9 @@ if __name__ == "__main__":
     #print(x)
     #print(str_b(visp(pos, x)))
     #print()
+    a = ChessGame()
+    print(a.str_board())
+    print(a.g((0, 0)))
 
     #test_points_on_line()
 
@@ -56,4 +59,4 @@ if __name__ == "__main__":
 
     #test_game()
     
-    test_check()
+    #test_check()
