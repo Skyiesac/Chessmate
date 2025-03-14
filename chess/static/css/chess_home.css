@@ -6,18 +6,6 @@ body {
   margin: 0 auto;
 }
 
-.chess-board-cell {
-  color: #AAA;
-  background-color: white;
-}
-/*td:nth-child(even) {*/
-    /*background-color: grey;*/
-/*}*/
-/*td:nth-child(2n) {*/
-    /*background-color: green;*/
-/*}*/
-
-
 #board-table-container {
   text-align: center;
 }
@@ -26,15 +14,27 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin: 0 auto;
-  max-width: 900px;
+  max-width: 1000px;
 }
+
+.chess-board-cell {
+  color: #AAA;
+  background-color: white;
+  padding: 5px;
+}
+
 .chess-board-white {
-  background-color: rgb(132, 34, 34);
-  filter: brightness(0.7);
+  background-color: rgb(96, 104, 108);
+  filter: brightness(0.8);
 }
 
 .chess-board-black {
-  background-color: rgb(96, 104, 108);
-  filter: brightness(0.7);
+  background-color: rgb(132, 34, 34);
+  filter: brightness(0.8);
+}
+
+.chess-piece-image {
+  width: 100px;
+  height: 100px;
 }
 

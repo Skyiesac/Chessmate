@@ -18,7 +18,7 @@ function gcolor(s) {
 
 function piece_url(p) {
     let color = gcolor(p);
-    return chess_url_image_base + color + '_' + piece_dict[lower(p)] + '.png';
+    return chess_url_image_base + color + '_' + piece_dict[lower(p)] + '.svg';
 }
 
 function translate(y, x = null) {
@@ -39,7 +39,7 @@ function populate_board(ll) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             let purl = piece_url( ll[i][j] );
-            get_square(i+1, j+1).innerHTML = '<img src="' + purl + '">';
+            get_square(i+1, j+1).innerHTML = '<img class="chess-piece-image" src="' + purl + '">';
         }
     }
 }
