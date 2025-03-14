@@ -1,11 +1,13 @@
 
 body {
+  color: #AAA;
   background-color: black;
-  color: white;
+  text-align: center;
+  margin: 0 auto;
 }
 
 .chess-board-cell {
-  color: rgb(0, 255, 0);
+  color: #AAA;
   background-color: white;
 }
 /*td:nth-child(even) {*/
@@ -16,10 +18,23 @@ body {
 /*}*/
 
 
+#board-table-container {
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 auto;
+  max-width: 900px;
+}
 .chess-board-white {
-  background-color: brown;
+  background-color: rgb(132, 34, 34);
+  filter: brightness(0.7);
 }
 
 .chess-board-black {
-  background-color: grey;
+  background-color: rgb(96, 104, 108);
+  filter: brightness(0.7);
 }
+
