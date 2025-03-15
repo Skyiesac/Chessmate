@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-from django.test import TestCase
+from django.test                import TestCase
 from chess.ChessLogic.ChessBase import ChessGame
 #from ..ChessLogic import ChessBase.ChessGame
 
 #-------------------------#-
 #    RUY LOPEZ            #-
 #-------------------------#-
-
 ###########################-
 ####  0 1 2 3 4 5 6 7  ####-
 ##-----------------------##-
@@ -28,7 +27,7 @@ class ChessLogicTestCase(TestCase):
         self.g = ChessGame()
         self.code_dict = {'T': self.assertTrue, 'F': self.assertFalse}
         self.cases = [
-            ('Te2e4', 'Te7e5', 'Tg1f3', 'Tb8c6', 'Tf1b5', 'Fb7b5', 'Td7d5')#, 'Te4d5', 'Tc6b4', 'Tc7c5'),
+            ('Te2e4', 'Te7e5', 'Tg1f3', 'Tb8c6', 'Tf1b5', 'Fb7b5', 'Td7d5', 'Te4d5', 'Fc6b4', 'Fc7c5', 'Tc8d7'),
         ]
 
     def test_ruy_lopez(self):
@@ -52,6 +51,7 @@ class ChessLogicTestCase(TestCase):
             self.g.reset()
             for j in _case:
                 self.code_dict[j[0]](self.g.move(j[1:]))
+        print(self.g)
 
     def test_pawn(self):
         self.g.reset()

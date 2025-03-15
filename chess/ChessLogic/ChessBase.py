@@ -30,7 +30,6 @@ class ChessGame(object):
         check = 'p' if self.g(op) == 'P' else 'P'
         if self.g(np).lower() == check and abs(last['op'][0] - last['np'][0]) == 2:
             if midpoint(last['op'], last['np']) == np:
-                print('last', last['np'])
                 return last['np']
         return False
     def g(self, pos):
@@ -51,7 +50,7 @@ class ChessGame(object):
         return [[x for x in y] for y in from_string.split("/")][::-1]
     def reset(self):
         self.board       = self.board_from_string()
-        self.moves   = []
+        self.moves       = []
         self.to_move     = 'white'
     def str_board(self):
         return "\n".join(["".join([str(x) for x in y]) for y in self.board][::-1])
@@ -78,14 +77,13 @@ class ChessGame(object):
         self.s(np, self.g(op))
         self.s(op, '-')
         if (enpass := self.en_passant(op, np)):
-            print(enpass)
             info += 'enpass-' + self.translate(enpass)
             self.s(enpass, '-')
         elif self.g(op).lower() == 'p' and (np[0] == 7 or np[0] == 0):
             info += 'promote-' + promote
             self.s(np, promote.upper() if self.to_move == 'white' else promote.lower())
         self.toggle_move()
-        if   self.is_mate(): info.append('checkmate')
+        if   self.is_mate():  info.append('checkmate')
         elif self.is_check(): info.append('check')
         self.moves.append({'board': old_board, 'op': op, 'np': np, 'info': info})
         return True
@@ -111,7 +109,7 @@ class ChessGame(object):
         else:
             for i in range(0, 8):
                 for j in range(0, 8):
-                    if self.gcolor((i, j)) != color:
+                    if self.gcolor((i, j)) not in (color, 'empty'):
                         aj = (i, j)
                         if self.direct_attack(aj, kpos):
                             return True
@@ -178,36 +176,4 @@ class ChessGame(object):
 
 def read_pgn(str_pgn):
     pass
-
-
-
-#------------------QUICK-TESTING----------------------#
-if __name__ == "__main__":
-    moves1 = [
-              'e2e4',
-              'e7e5',
-              'g1f3',
-              'b8c6',
-              'f1b5',
-              'b7b5', #False, invalid move
-              'd7d5',
-              'e4d5',
-              'c6b4',
-              #'a2a4',
-              #'c7c5',
-              #'d5c6',
-              #'d8d2', # White should be in Check
-             ]
-    a = ChessGame()
-    for i in moves1:
-        print("\n\n\n\n")
-        print(a.move(i))
-        print(a.to_move)
-        print(str(a))
-    #print(a.is_check('white'))
-    #print(a.is_check('black'))
-    #print(a.is_checkmate('black'))
-    #print(a.to_move)
-    #print(a.en_passant((4, 3), (5, 2)))
-
 

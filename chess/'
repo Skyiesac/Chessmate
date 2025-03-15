@@ -60,6 +60,24 @@ hxg5 29. b3 Ke6 30. a3 Kd6 31. axb4 cxb4 32. Ra5 Nd5 33. f3 Bc8 34. Kf2 Bf5
 Nf2 42. g4 Bd3 43. Re6 1/2-1/2"""
     print(example_string)
 
+def test_case():
+    cases = [
+        (#'e2e4', 'e7e5',
+         'g1f3', 'b8c6', 'f3g5', 'd7d5', 'e4d5', 'c6b4', 'c7c5'),
+    ]
+    g = ChessGame()
+    for _case in cases:
+        for j in _case:
+            g.move(j)
+            print()
+            print()
+            print('-----------------------', j)
+            print(g)
+
+    #print(g)
+
+    #self.assertEqual(roy_g, str(self.g))
+
 if __name__ == "__main__":
     #pos = (3, 3)
     #x = vm_list('k', pos)
