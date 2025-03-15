@@ -28,7 +28,7 @@ class ChessGame(object):
         if self.g(op).lower() != 'p' or len(self.moves) <= 0: return False
         last = self.moves[-1]
         check = 'p' if self.g(op) == 'P' else 'P'
-        if self.g(np).lower() == check and abs(last['op'][0] - last['np'][0]) == 2:
+        if self.g(last['np']) == check and abs(last['op'][0] - last['np'][0]) == 2:
             if midpoint(last['op'], last['np']) == np:
                 return last['np']
         return False
@@ -74,14 +74,14 @@ class ChessGame(object):
         if promote.lower() not in ('q', 'n', 'r', 'b'): return False
         info=''
         old_board = self.str_board()
-        self.s(np, self.g(op))
-        self.s(op, '-')
         if (enpass := self.en_passant(op, np)):
             info += 'enpass-' + self.translate(enpass)
             self.s(enpass, '-')
         elif self.g(op).lower() == 'p' and (np[0] == 7 or np[0] == 0):
             info += 'promote-' + promote
-            self.s(np, promote.upper() if self.to_move == 'white' else promote.lower())
+            self.s(op, promote.upper() if self.to_move == 'white' else promote.lower())
+        self.s(np, self.g(op))
+        self.s(op, '-')
         self.toggle_move()
         if   self.is_mate():  info.append('checkmate')
         elif self.is_check(): info.append('check')

@@ -74,6 +74,7 @@ if __name__ == "__main__":
     #test_game()
     #test_check()
     #test_read_pgn()
-    test_case()
+    a = ChessGame()
+    print(a.translate('c6'))
 
 
