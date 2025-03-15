@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
-from .HelperFunctions import ind, seti, str_b, visp, pair_add, lmake
-from .HelperFunctions import remove_out_of_range, points_on_line, sign
+from .HelperFunctions import pair_add, average, midpoint, sign
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
@@ -14,8 +13,8 @@ MOVE_DICT    = {'k': KING_MOVES, 'q': QUEEN_MOVES, 'b': BISHOP_MOVES, 'r': ROOK_
 
 def vm_list(piece, pos):
     if piece.lower() in MOVE_DICT:
-        l = lmake(pos, MOVE_DICT[piece.lower()])
-        return remove_out_of_range(l)
+        l = [pair_add(pos, x) for x in MOVE_DICT[piece.lower()]]
+        return list(filter(lambda p: p[0] >= 0 and p[1] >= 0 and p[0] <= 7 and p[1] <= 7, l))
     else:
         return []
 
@@ -25,6 +24,15 @@ class ChessGame(object):
         self.board   = self.board_from_string(start_string)
         self.moves   = []
         self.to_move = to_move
+    def en_passant(self, op, np):
+        if self.g(op).lower() != 'p' or len(self.moves) <= 0: return False
+        last = self.moves[-1]
+        check = 'p' if self.g(op) == 'P' else 'P'
+        if self.g(np).lower() == check and abs(last['op'][0] - last['np'][0]) == 2:
+            if midpoint(last['op'], last['np']) == np:
+                print('last', last['np'])
+                return last['np']
+        return False
     def g(self, pos):
         if type(pos) == str: return self.g(self.translate(pos))
         else: return self.board[pos[0]][pos[1]]
@@ -63,12 +71,23 @@ class ChessGame(object):
                 if self.board[i][j] == ('K' if color == 'white' else 'k'):
                     return (i, j)
         return False
-    def internal_move(self, op, np):
+    def internal_move(self, op, np, promote='q'):
+        if promote.lower() not in ('q', 'n', 'r', 'b'): return False
+        info=''
         old_board = self.str_board()
         self.s(np, self.g(op))
         self.s(op, '-')
-        self.moves.append({'board': old_board, 'op': op, 'np': np})
+        if (enpass := self.en_passant(op, np)):
+            print(enpass)
+            info += 'enpass-' + self.translate(enpass)
+            self.s(enpass, '-')
+        elif self.g(op).lower() == 'p' and (np[0] == 7 or np[0] == 0):
+            info += 'promote-' + promote
+            self.s(np, promote.upper() if self.to_move == 'white' else promote.lower())
         self.toggle_move()
+        if   self.is_mate(): info.append('checkmate')
+        elif self.is_check(): info.append('check')
+        self.moves.append({'board': old_board, 'op': op, 'np': np, 'info': info})
         return True
     def puts_check(self, op, np):
         c = 'white' if self.g(op) == self.g(op).upper() else 'black'
@@ -84,7 +103,8 @@ class ChessGame(object):
             return 'white'
         else:
             return 'black'
-    def is_check(self, color):
+    def is_check(self, color=None):
+        if color == None: color = self.to_move
         kpos = self.king_position(color)
         if not kpos:
             return True
@@ -125,16 +145,18 @@ class ChessGame(object):
         a = (np[0] - op[0], np[1] - op[1])
         b = (abs(a[0]), abs(a[1]))
         if sign(a[0]) == correct_direction:
-            if b[0] == 1:
+            if self.en_passant(op, np):
+                return True
+            elif b[0] == 1:
                 return (b[1] == 1 and self.g(np) != '-') or (b[1] == 0 and self.g(np) == '-')
             elif b[0] == 2:
                 return (op[0] == 1 and self.g(np) == '-') or (op[0] == 6 and self.g(np) == '-')
         return False
-    def move(self, op, np=None):
+    def move(self, op, np=None, promote='q'):
         if np == None:
-            return self.move(self.translate(op[0:2]), self.translate(op[2:]))
+            return self.move(self.translate(op[0:2]), self.translate(op[2:]), promote=promote)
         else:
-            return self.valid_move(op, np) and self.internal_move(op, np)
+            return self.valid_move(op, np) and self.internal_move(op, np, promote=promote)
     def is_mate(self):
         if not self.king_position(self.to_move):
             return True
@@ -153,6 +175,11 @@ class ChessGame(object):
                             if self.valid_move((ia, ja), (kb, lb)):
                                 return True
         return False
+
+def read_pgn(str_pgn):
+    pass
+
+
 
 #------------------QUICK-TESTING----------------------#
 if __name__ == "__main__":
