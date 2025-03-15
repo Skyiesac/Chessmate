@@ -27,7 +27,10 @@ class ChessLogicTestCase(TestCase):
         self.g = ChessGame()
         self.code_dict = {'T': self.assertTrue, 'F': self.assertFalse}
         self.cases = [
-            ('Te2e4', 'Te7e5', 'Tg1f3', 'Tb8c6', 'Tf1b5', 'Fb7b5', 'Td7d5', 'Te4d5', 'Fc6b4', 'Fc7c5', 'Tc8d7'),
+            ('Te2e4', 'Te7e5', 'Tg1f3', 'Tb8c6', 'Tf1b5', 'Fb7b5',
+             'Td7d5', 'Te4d5', 'Fc6b4', 'Fc7c5', 'Tc8d7', 'Ff7f5',
+             'Td2d4', 'Fe5d3', 'Tc6b4', 'Fb2b4', 'Te1e2', 'Tc7c5',
+             'Fd5c5', 'Td5c6'),
         ]
 
     def test_ruy_lopez(self):
