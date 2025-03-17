@@ -24,7 +24,7 @@ function piece_url(p) {
 function translate(y, x = null) {
     let ver = 'abcdefgh';
     if (typeof(y) == 'string' ) {
-        if (x == null) { y = parseInt(y[1]); x = 'abcdefgh'.indexOf([y[0]]); }
+        if (x == null) { y = parseInt(y[1]); x = 'abcdefgh'.indexOf(y[0]); }
         return (y, x);
     }
 }
