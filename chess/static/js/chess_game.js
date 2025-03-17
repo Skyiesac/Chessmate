@@ -1,12 +1,9 @@
 
 let pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
-
-function lower(s) { return s.toLowerCase(); }
-
-function gcolor(s) { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
-
-function piece_url(p) { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
-
+let highlighted = [];
+function lower(s)       { return s.toLowerCase(); }
+function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
+function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
 function translate(y, x = null) {
     return  ( typeof(y) == 'string'
             ? [parseInt(y[1]), 'abcdefgh'.indexOf(y[0])]
@@ -19,11 +16,20 @@ function get_square(y, x = null) {
             : document.getElementById('board-'+y+'-'+x) );
 }
 
-function add_highlight() {
-    if (piece.classList.contains("highlight-piece")) {
-        piece.remove
+function handle_click() {
+    if (piece.classList.includes("to-move-piece")) {
     }
     else {
+    }
+}
+
+function handle_piece(piece, addt = true) {
+    if (addt) {
+        piece.classList.add("to-move-piece");
+        piece.addEventListener("click", handle_click);
+    } else {
+        piece.classList.remove("to-move-piece");
+        piece.removeEventListener("click", handle_click);
     }
 }
 
@@ -32,10 +38,9 @@ function populate_board(ll, rev = false, to_move = false) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if (to_move && gcolor(ll[i][j]) == to_move) {
-                get_square(i+1, j+1).classList.add("to-move-piece");
-                //get_square(i+1, j+1).addEventListener("click", add_highlight);
+                handle_piece(get_square(i+1, j+1));
             } else {
-                get_square(i+1, j+1).classList.remove("to-move-piece");
+                handle_piece(get_square(i+1, j+1), addt = false);
             }
             get_square(i+1, j+1).innerHTML = '<img class="chess-piece-image" src="' + piece_url( ll[i][j] ) + '">';
         }
