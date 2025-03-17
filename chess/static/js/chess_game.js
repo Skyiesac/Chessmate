@@ -22,7 +22,8 @@ function rem_all(class_name) {
     }
 }
 
-function valid_move(piece) {
+function valid_move_highlight(piece) {
+    console.log(piece.children);
     return piece;
 }
 
@@ -34,7 +35,7 @@ function handle_click(event) {
         rem_all('highlighted-piece-main');
         if (!z) {
             piece.classList.add("highlighted-piece-main");
-            valid_move(piece);
+            valid_move_highlight(piece);
         } else {
             rem_all("valid-moves");
         }
