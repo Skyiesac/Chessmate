@@ -23,16 +23,20 @@ table {
   padding: 5px;
   width: 100px;
   height: 100px;
+  filter: brightness(0.8);
+  user-select: none;
 }
 
 .chess-board-white {
   background-color: rgb(96, 104, 108);
-  filter: brightness(0.8);
 }
 
 .chess-board-black {
   background-color: rgb(132, 34, 34);
-  filter: brightness(0.8);
+}
+
+.chess-piece-image {
+  pointer-events: none;
 }
 
 .chess-piece-image {
@@ -48,3 +52,16 @@ table {
 .to-move-piece:hover {
   cursor: pointer;
 }
+
+.highlighted-piece-main {
+  background-color: green;
+}
+
+.highlighted-piece-secondary {
+  background-color: red;
+}
+
+.valid-moves {
+  background-color: blue;
+}
+

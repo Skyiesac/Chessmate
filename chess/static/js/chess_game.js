@@ -1,6 +1,5 @@
 
 let pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
-let highlighted = [];
 function lower(s)       { return s.toLowerCase(); }
 function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
 function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
@@ -16,10 +15,35 @@ function get_square(y, x = null) {
             : document.getElementById('board-'+y+'-'+x) );
 }
 
-function handle_click() {
-    if (piece.classList.includes("to-move-piece")) {
+function rem_all(class_name) {
+    let els = document.getElementsByClassName(class_name);
+    for (let i = 0; i < els.length; i++) {
+        els[i].classList.remove(class_name);
+    }
+}
+
+function valid_move(piece) {
+    return piece;
+}
+
+function handle_click(event) {
+    let piece = event.target;
+    rem_all('highlighted-piece-secondary');
+    if (piece.classList.contains("to-move-piece")) {
+        let z = piece.classList.contains("highlighted-piece-main");
+        rem_all('highlighted-piece-main');
+        if (!z) {
+            piece.classList.add("highlighted-piece-main");
+            valid_move(piece);
+        } else {
+            rem_all("valid-moves");
+        }
     }
     else {
+        if (document.getElementsByClassName("highlighted-piece-main").length >= 1) {
+            console.log("HI");
+            piece.classList.add("highlighted-piece-secondary");
+        }
     }
 }
 
