@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Chess Home</title>
+    <title>Chess Game</title>
     {% load static %}
     <link rel='stylesheet' type="text/css" href="{% static 'css/chess_home.css' %}">
 
@@ -10,9 +10,9 @@
       var chess_url_image_base = "{% static 'images/chess_pieces' %}/";
     </script>
 
-    <script src="{% static 'js/chess_puzzle.js' %}"></script>
+    <script src="{% static 'js/chess_game.js' %}"></script>
 
-    {{ puzzle_info|json_script:"puzzle-info" }}
+    {{ game|json_script:"game-get-info" }}
   </head>
   <body>
     <h1 id="chess_banner">Chess Home</h1>

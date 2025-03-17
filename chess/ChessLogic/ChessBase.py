@@ -42,7 +42,7 @@ class ChessGame(object):
         if type(l) == str: return (int(l[1]) - 1), 'abcdefgh'.index(l[0].lower())
         else:              return 'abcdefgh'[l[1]] + str(l[0] + 1)
     def board_from_string(self, from_string=None):
-        if from_string == None:
+        if from_string == None or from_string == "":
             return self.board_from_string(self.default_board)
         for i in '123456789':
             from_string = from_string.replace(i, "-"*int(i))
