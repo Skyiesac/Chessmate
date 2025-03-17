@@ -40,3 +40,11 @@ table {
   height: 100px;
 }
 
+.to-move-piece {
+  outline-offset: -10px;
+  outline: 1px solid yellow !important;
+}
+
+.to-move-piece:hover {
+  cursor: pointer;
+}
