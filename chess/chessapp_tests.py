@@ -60,6 +60,12 @@ hxg5 29. b3 Ke6 30. a3 Kd6 31. axb4 cxb4 32. Ra5 Nd5 33. f3 Bc8 34. Kf2 Bf5
 Nf2 42. g4 Bd3 43. Re6 1/2-1/2"""
     print(example_string)
 
+
+def super_test():
+    a = ChessGame()
+    print(a.move('e2e4'))
+    print(a.move('e7e5'))
+
 if __name__ == "__main__":
     #pos = (3, 3)
     #x = vm_list('k', pos)

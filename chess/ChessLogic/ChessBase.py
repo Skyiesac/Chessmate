@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from .HelperFunctions import pair_add, average, midpoint, sign
+import sys
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
@@ -21,6 +22,7 @@ def vm_list(piece, pos):
 class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     def __init__(self, start_string=None, moves=[], to_move='white'):
+        sys.setrecursionlimit(2000)
         self.board   = self.board_from_string(start_string)
         self.moves   = moves
         self.to_move = to_move
