@@ -1,7 +1,7 @@
 import json
 from django.forms.models    import model_to_dict
 from django.core            import serializers
-from django.http            import HttpResponse
+from django.http            import JsonResponse
 from django.shortcuts       import get_object_or_404, render, redirect
 from .models                import Game
 from .ChessLogic.ChessBase  import ChessGame
@@ -22,11 +22,17 @@ def chess_game(request, game_id):
         rec_data = json.loads(request.body)
         if 'op' not in rec_data or 'np' not in rec_data:
             return False
-        elif ng.move(rec_data['op'], rec_data['np']):
+        print([int(x) for x in rec_data['op']], [int(x) for x in rec_data['np']])
+        resg = ng.move([int(x) for x in rec_data['op']], [int(x) for x in rec_data['np']])
+        if resg:
             game.board      = ng.str_board()
             game.moves      = ",,".join(ng.moves)
             game.to_move    = ng.to_move
             game.save()
+            result = "valid move"
+        else:
+            result = "invalid move"
+        return JsonResponse({"result": result, "board": game.board, "to_move": game.to_move})
     else:
         return render(request, 'chess_game.html', {"game": {"info": game.info, "moves": ng.moves, "board": ng.str_board(), "to_move": ng.to_move}})
 

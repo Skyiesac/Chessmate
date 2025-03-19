@@ -8,6 +8,33 @@ function lower(s)       { return s.toLowerCase(); }
 function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
 function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
 
+function parse_str_board(str_board) {
+    return str_board.split("\n").reverse();
+}
+
+function handle_piece(piece, addt=true) {
+    if (addt) {
+        piece.classList.add("to-move-piece");
+        piece.addEventListener("click", handle_click);
+    } else {
+        piece.classList.remove("to-move-piece");
+        piece.removeEventListener("click", handle_click);
+    }
+}
+
+
+function populate_board(ll, to_move = false) {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            if (to_move && gcolor(ll[i][j]) == to_move) {
+                handle_piece(get_square(i+1, j+1));
+            } else {
+                handle_piece(get_square(i+1, j+1), false);
+            }
+            get_square(i+1, j+1).innerHTML = '<img class="chess-piece-image" src="' + piece_url( ll[i][j] ) + '">';
+        }
+    }
+}
 function translate(y, x = null) {
     return  ( typeof(y) == 'string'
             ? [parseInt(y[1]), 'abcdefgh'.indexOf(y[0])]
@@ -33,8 +60,17 @@ function rem_all(class_name) {
 }
 
 function success_move(response) {
-    console.log("succes move");
-    console.log(response);
+    rem_all("highlighted-piece-main");
+    response.json().then(data => {
+        console.log(data);
+        if (data["result"] == "valid move") {
+            to_move = data["to_move"];
+            game_board = parse_str_board(data["board"]);
+            populate_board(game_board, to_move);
+        } else {
+            console.log("invalid move");
+        }
+    });
 }
 
 function second_click(event) {
@@ -43,7 +79,6 @@ function second_click(event) {
 
     let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
     post_request("", csrftoken, data_body, success_move);
-    //piece.classList.add("highlighted-piece-secondary");
 }
 
 function highlight_add(piece) {
@@ -77,17 +112,6 @@ function handle_click(event) {
     }
 }
 
-function handle_piece(piece, addt=true) {
-    if (addt) {
-        piece.classList.add("to-move-piece");
-        piece.addEventListener("click", handle_click);
-    } else {
-        piece.classList.remove("to-move-piece");
-        piece.removeEventListener("click", handle_click);
-    }
-}
-
-
 function flip_table() {
     let table_body = document.getElementById("chess-board-table-body");
     for (const i of table_body.children) {
@@ -95,24 +119,11 @@ function flip_table() {
     }
 }
 
-function populate_board(ll, to_move = false) {
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-            if (to_move && gcolor(ll[i][j]) == to_move) {
-                handle_piece(get_square(i+1, j+1));
-            } else {
-                handle_piece(get_square(i+1, j+1), false);
-            }
-            get_square(i+1, j+1).innerHTML = '<img class="chess-piece-image" src="' + piece_url( ll[i][j] ) + '">';
-        }
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     csrftoken           = document.querySelector('[name=csrfmiddlewaretoken]').value;
     flip_board_button   = document.getElementById("flip-board");
     game_info           = JSON.parse(document.getElementById("game-get-info").textContent);
-    game_board          = game_info.board.split("\n").reverse();
+    game_board          = parse_str_board(game_info.board);
     to_move             = game_info.to_move;
     ord                 = false;
 
