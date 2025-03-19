@@ -1,8 +1,10 @@
+var flip_board_button, game_info, game_board, to_move,  ord;
 
-let pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
+var pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
 function lower(s)       { return s.toLowerCase(); }
 function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
 function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
+
 function translate(y, x = null) {
     return  ( typeof(y) == 'string'
             ? [parseInt(y[1]), 'abcdefgh'.indexOf(y[0])]
@@ -15,6 +17,11 @@ function get_square(y, x = null) {
             : document.getElementById('board-'+y+'-'+x) );
 }
 
+function get_from_el(piece_el) {
+    let id_g = piece_el.id.split("-");
+    return [parseInt(id_g[1]), parseInt(id_g[2])];
+}
+
 function rem_all(class_name) {
     let els = document.getElementsByClassName(class_name);
     for (let i = 0; i < els.length; i++) {
@@ -22,8 +29,13 @@ function rem_all(class_name) {
     }
 }
 
-function valid_move_highlight(piece) {
-    console.log(piece.children);
+function highlight_add(piece) {
+    let piece_char = get_from_el(piece);
+    console.log(piece_char);
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+        }
+    }
     return piece;
 }
 
@@ -35,7 +47,7 @@ function handle_click(event) {
         rem_all('highlighted-piece-main');
         if (!z) {
             piece.classList.add("highlighted-piece-main");
-            valid_move_highlight(piece);
+            highlight_add(piece);
         } else {
             rem_all("valid-moves");
         }
@@ -58,8 +70,16 @@ function handle_piece(piece, addt = true) {
     }
 }
 
-function populate_board(ll, rev = false, to_move = false) {
-    if (rev) { populate_board(ll.reverse()) };
+
+function flip_table() {
+    let table_body = document.getElementById("chess-board-table-body");
+    for (const i of table_body.children) {
+        table_body.prepend(i);
+        console.log(i);
+    }
+}
+
+function populate_board(ll, to_move = false) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if (to_move && gcolor(ll[i][j]) == to_move) {
@@ -72,24 +92,18 @@ function populate_board(ll, rev = false, to_move = false) {
     }
 }
 
-
-function get_id(p_id) {
-    return p_id;
-}
-
-
 document.addEventListener('DOMContentLoaded', function() {
-    let flip_board_button = document.getElementById("flip-board");
-    let game_info         = JSON.parse(document.getElementById("game-get-info").textContent);
-    let game_board        = game_info.board.split("\n").reverse();
-    let to_move           = game_info.to_move;
-    let ord               = false;
+    flip_board_button = document.getElementById("flip-board");
+    game_info         = JSON.parse(document.getElementById("game-get-info").textContent);
+    game_board        = game_info.board.split("\n").reverse();
+    to_move           = game_info.to_move;
+    ord               = false;
 
-    populate_board(game_board, rev=false, to_move=to_move);
+    populate_board(game_board, to_move=to_move);
     console.log(game_info);
 
     flip_board_button.addEventListener("click", (event) => {
-        populate_board(game_board, rev=(! ord), to_move = to_move);
+        flip_table();
     });
 });
 
