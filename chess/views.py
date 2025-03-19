@@ -16,14 +16,15 @@ def chess_home(request):
 
 def chess_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
-    ng = ChessGame(start_string=game.board, moves=game.moves, to_move=game.to_move)
+    gmoves = ",,".split(game.moves) if game.moves and len(game.moves) > 0 else []
+    ng = ChessGame(start_string=game.board, moves=gmoves, to_move=game.to_move)
     if (request.method == "POST"):
         rec_data = json.loads(request.body)
         if 'op' not in rec_data or 'np' not in rec_data:
             return False
         elif ng.move(rec_data['op'], rec_data['np']):
             game.board      = ng.str_board()
-            game.moves      = ",".join(ng.moves)
+            game.moves      = ",,".join(ng.moves)
             game.to_move    = ng.to_move
             game.save()
     else:
