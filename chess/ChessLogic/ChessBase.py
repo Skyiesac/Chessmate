@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-from .HelperFunctions import pair_add, average, midpoint, sign
-
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
 KNIGHT_MOVES = [(-1, -2), (1, -2), (-1, 2), (1, 2), (-2, -1), (2, -1), (-2, 1), (2, 1)]
@@ -11,12 +9,37 @@ ROOK_MOVES   = [(0, x) for x in l] +  [(x, 0) for x in l]
 QUEEN_MOVES  = BISHOP_MOVES + ROOK_MOVES
 MOVE_DICT    = {'k': KING_MOVES, 'q': QUEEN_MOVES, 'b': BISHOP_MOVES, 'r': ROOK_MOVES, 'n': KNIGHT_MOVES}
 
+def visp(pos, moves):
+    board = [['_' for x in range(0, 8)] for y in range(0, 8)]
+    board[pos[0]][pos[1]] = 'x'
+    for i in moves:
+        board[i[0]][i[1]] = '+'
+    return board
+def pair_add(p1, p2):
+    return (p1[0] + p2[0], p1[1] + p2[1])
+def sign(n):
+    if   n < 0: return -1
+    elif n > 0: return  1
+    else:       return  0
+def points_on_line(op, np, mint=1):
+    a  = (np[0] - op[0], np[1] - op[1])
+    x1 = sign(a[0]); x2 = sign(a[1])
+    points = []
+    for i in range(1, max(abs(a[0]), abs(a[1])) + mint):
+        points.append(pair_add(op, (i*x1, i*x2)))
+    return points
+def average(*args):
+    return sum(args) // len(args)
+def midpoint(op, np):
+    return (average(op[0], np[0]), average(op[1], np[1]))
 def vm_list(piece, pos):
     if piece.lower() in MOVE_DICT:
         l = [pair_add(pos, x) for x in MOVE_DICT[piece.lower()]]
         return list(filter(lambda p: p[0] >= 0 and p[1] >= 0 and p[0] <= 7 and p[1] <= 7, l))
     else:
         return []
+def read_pgn(str_pgn):
+    pass
 
 class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
@@ -181,7 +204,4 @@ class ChessGame(object):
                             if self.valid_move((ia, ja), (kb, lb)):
                                 return True
         return False
-
-def read_pgn(str_pgn):
-    pass
 
