@@ -83,6 +83,21 @@ class ChessLogicTestCase(TestCase):
         self.assertTrue( self.g.direct_attack(  (6, 4), (5, 4)  ))
         self.assertFalse(self.g.direct_attack(  (6, 4), (6, 4)  ))
 
+    def test_ultra(self):
+        self.g.reset()
+        a = [((1, 4), (3, 4)),
+             ((6, 4), (5, 4)),
+             ((1, 5), (3, 5)),
+             ((7, 3), (6, 4))]
+        print("----------")
+        print(self.g.translate(a[0][0]))
+        print(self.g.translate(a[0][1]))
+        print(self.g.translate('e2'))
+        print(self.g.translate('e4'))
+        for i in a:
+            self.assertNotEqual(False, self.g.move(i[0], np=i[1]))
+        print(self.g.str_board())
+
     def test_queen(self):
         pass
         

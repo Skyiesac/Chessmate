@@ -77,6 +77,7 @@ function second_click(event) {
     let piece_main = document.getElementsByClassName("highlighted-piece-main")[0];
     let piece_second = event.target;
 
+    console.log({"op": get_from_el(piece_main), "np": get_from_el(piece_second)});
     let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
     post_request("", csrftoken, data_body, success_move);
 }

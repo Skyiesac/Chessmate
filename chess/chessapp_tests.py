@@ -75,6 +75,11 @@ if __name__ == "__main__":
     #test_check()
     #test_read_pgn()
     a = ChessGame()
-    print(a.translate('c6'))
+    print(a.move('e2e4'))
+    print(a.move('e7e5'))
+    print('ote', a.move('d1e2'))
+    print(a.str_board())
+    print(a.undo_move())
+    print(a.str_board())
 
 

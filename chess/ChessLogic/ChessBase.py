@@ -22,7 +22,7 @@ class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     def __init__(self, start_string=None, moves=[], to_move='white'):
         self.board   = self.board_from_string(start_string)
-        self.moves   = []
+        self.moves   = moves
         self.to_move = to_move
     def move_unpack(self, str_move):
         a = str_move.split(";;")
@@ -89,8 +89,9 @@ class ChessGame(object):
         self.s(np, self.g(op))
         self.s(op, '-')
         self.toggle_move()
-        if   self.is_mate():  info.append('checkmate')
-        elif self.is_check(): info.append('check')
+        if   self.is_mate():  info += 'checkmate'
+        elif self.is_check(): info += 'check'
+
         self.moves.append(";;".join([old_board, self.translate(op), self.translate(np), info]))
         return True
     def puts_check(self, op, np):
