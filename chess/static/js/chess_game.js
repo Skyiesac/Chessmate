@@ -13,12 +13,13 @@ function parse_str_board(str_board) {
 }
 
 function handle_piece(piece, addt=true) {
+    piece.removeEventListener("click", second_click);
+    piece.removeEventListener("click", handle_click);
     if (addt) {
         piece.classList.add("to-move-piece");
         piece.addEventListener("click", handle_click);
     } else {
         piece.classList.remove("to-move-piece");
-        piece.removeEventListener("click", handle_click);
     }
 }
 
@@ -77,7 +78,6 @@ function second_click(event) {
     let piece_main = document.getElementsByClassName("highlighted-piece-main")[0];
     let piece_second = event.target;
 
-    console.log({"op": get_from_el(piece_main), "np": get_from_el(piece_second)});
     let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
     post_request("", csrftoken, data_body, success_move);
 }
