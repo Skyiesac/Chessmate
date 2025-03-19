@@ -1,3 +1,6 @@
+import { post_request } from "./helper_functions.js";
+
+var csrftoken;
 var flip_board_button, game_info, game_board, to_move,  ord;
 
 var pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
@@ -13,7 +16,7 @@ function translate(y, x = null) {
 
 function get_square(y, x = null) {
     return  ( typeof(y) == 'string'
-            ? get_square(translate(y, x=x))
+            ? get_square(translate(y, x))
             : document.getElementById('board-'+y+'-'+x) );
 }
 
@@ -29,10 +32,18 @@ function rem_all(class_name) {
     }
 }
 
-function second_click(event) {
+function success_move(response) {
+    console.log("succes move");
+    console.log(response);
+}
 
-    let piece = event.target;
-    piece.classList.add("highlighted-piece-secondary");
+function second_click(event) {
+    let piece_main = document.getElementsByClassName("highlighted-piece-main")[0];
+    let piece_second = event.target;
+
+    let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
+    post_request("", csrftoken, data_body, success_move);
+    //piece.classList.add("highlighted-piece-secondary");
 }
 
 function highlight_add(piece) {
@@ -67,7 +78,7 @@ function handle_click(event) {
     }
 }
 
-function handle_piece(piece, addt = true) {
+function handle_piece(piece, addt=true) {
     if (addt) {
         piece.classList.add("to-move-piece");
         piece.addEventListener("click", handle_click);
@@ -91,7 +102,7 @@ function populate_board(ll, to_move = false) {
             if (to_move && gcolor(ll[i][j]) == to_move) {
                 handle_piece(get_square(i+1, j+1));
             } else {
-                handle_piece(get_square(i+1, j+1), addt = false);
+                handle_piece(get_square(i+1, j+1), false);
             }
             get_square(i+1, j+1).innerHTML = '<img class="chess-piece-image" src="' + piece_url( ll[i][j] ) + '">';
         }
@@ -99,13 +110,14 @@ function populate_board(ll, to_move = false) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    flip_board_button = document.getElementById("flip-board");
-    game_info         = JSON.parse(document.getElementById("game-get-info").textContent);
-    game_board        = game_info.board.split("\n").reverse();
-    to_move           = game_info.to_move;
-    ord               = false;
+    csrftoken           = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    flip_board_button   = document.getElementById("flip-board");
+    game_info           = JSON.parse(document.getElementById("game-get-info").textContent);
+    game_board          = game_info.board.split("\n").reverse();
+    to_move             = game_info.to_move;
+    ord                 = false;
 
-    populate_board(game_board, to_move=to_move);
+    populate_board(game_board, to_move);
     console.log(game_info);
 
     flip_board_button.addEventListener("click", (event) => {

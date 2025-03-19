@@ -1,19 +1,29 @@
 
-function post_request(url, csrf) {
-    fetch(url, {
+function func_redirect(response) {
+    window.location.href = response["url"];
+}
+
+function log_error(error) {
+    console.error('Error', error);
+}
+
+function juice(rep) {
+    console.log("juice");
+}
+
+function post_request(url, csrf, body=null, succ=func_redirect, err=log_error, redirect='follow') {
+    if (succ == null) { let succ = redirect; }
+    if (err  == null) { err  = basicerr; }
+    console.log("HI");
+    fetch(url,
+    {
         method: "POST",
         headers: { "X-CSRFTOKEN": csrf },
         mode: "same-origin",
         credentials: "same-origin",
-        redirect: 'follow',
-    })
-    .then(response => {
-        console.log(response);
-        window.location.href = response["url"];
-    })
-    .catch((error) => {
-        console.error('Error', error);
-    });
+        redirect: redirect,
+        body: JSON.stringify(body),
+    }).then(succ).catch(err);
 }
 
 /*

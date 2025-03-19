@@ -6,11 +6,13 @@
     {% load static %}
     <link rel='stylesheet' type="text/css" href="{% static 'css/chess_home.css' %}">
 
+    {% csrf_token %}
+
     <script id="load-image-z">
       var chess_url_image_base = "{% static 'images/chess_pieces' %}/";
     </script>
 
-    <script src="{% static 'js/chess_game.js' %}"></script>
+    <script type="module" src="{% static 'js/chess_game.js' %}"></script>
 
     {{ game|json_script:"game-get-info" }}
   </head>
