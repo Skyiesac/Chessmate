@@ -24,9 +24,15 @@ class ChessGame(object):
         self.board   = self.board_from_string(start_string)
         self.moves   = []
         self.to_move = to_move
+    def move_unpack(self, str_move):
+        a = str_move.split(";;")
+        return {"board": a[0],
+                "op": self.translate(a[1]),
+                "np": self.translate(a[2]),
+                "info": a[3]}
     def en_passant(self, op, np):
         if self.g(op).lower() != 'p' or len(self.moves) <= 0: return False
-        last = self.moves[-1]
+        last = self.move_unpack(self.moves[-1])
         check = 'p' if self.g(op) == 'P' else 'P'
         if self.g(last['np']) == check and abs(last['op'][0] - last['np'][0]) == 2:
             if midpoint(last['op'], last['np']) == np:
@@ -60,7 +66,7 @@ class ChessGame(object):
         if len(self.moves) <= 0:
             return False
         else:
-            last_move   = self.moves.pop()
+            last_move   = self.move_unpack(self.moves.pop())
             self.board  = self.board_from_string(last_move['board'])
             self.toggle_move()
             return last_move
@@ -85,7 +91,7 @@ class ChessGame(object):
         self.toggle_move()
         if   self.is_mate():  info.append('checkmate')
         elif self.is_check(): info.append('check')
-        self.moves.append({'board': old_board, 'op': op, 'np': np, 'info': info})
+        self.moves.append(";;".join([old_board, self.translate(op), self.translate(np), info]))
         return True
     def puts_check(self, op, np):
         c = 'white' if self.g(op) == self.g(op).upper() else 'black'

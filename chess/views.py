@@ -1,3 +1,4 @@
+import json
 from django.forms.models    import model_to_dict
 from django.core            import serializers
 from django.http            import HttpResponse
@@ -16,7 +17,17 @@ def chess_home(request):
 def chess_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
     ng = ChessGame(start_string=game.board, moves=game.moves, to_move=game.to_move)
-    return render(request, 'chess_game.html', {"game": {"info": game.info, "moves": ng.moves, "board": ng.str_board(), "to_move": ng.to_move}})
+    if (request.method == "POST"):
+        rec_data = json.loads(request.body)
+        if 'op' not in rec_data or 'np' not in rec_data:
+            return False
+        elif ng.move(rec_data['op'], rec_data['np']):
+            game.board      = ng.str_board()
+            game.moves      = ",".join(ng.moves)
+            game.to_move    = ng.to_move
+            game.save()
+    else:
+        return render(request, 'chess_game.html', {"game": {"info": game.info, "moves": ng.moves, "board": ng.str_board(), "to_move": ng.to_move}})
 
 def chess_puzzle(request, puzzle_id):
     return render(request, 'chess_puzzle.html', {"puzzle_info": {"HI": "BYE"}})

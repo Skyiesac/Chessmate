@@ -22,7 +22,7 @@ function get_square(y, x = null) {
 
 function get_from_el(piece_el) {
     let id_g = piece_el.id.split("-");
-    return [parseInt(id_g[1]), parseInt(id_g[2])];
+    return [parseInt(id_g[1]) - 1, parseInt(id_g[2]) - 1];
 }
 
 function rem_all(class_name) {
@@ -47,7 +47,6 @@ function second_click(event) {
 }
 
 function highlight_add(piece) {
-    let piece_char = get_from_el(piece);
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if (game_board[i][j] == '-' || gcolor(game_board[i][j]) != to_move) {
