@@ -29,11 +29,19 @@ function rem_all(class_name) {
     }
 }
 
+function second_click(event) {
+
+    let piece = event.target;
+    piece.classList.add("highlighted-piece-secondary");
+}
+
 function highlight_add(piece) {
     let piece_char = get_from_el(piece);
-    console.log(piece_char);
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
+            if (game_board[i][j] == '-' || gcolor(game_board[i][j]) != to_move) {
+                get_square(i+1, j+1).addEventListener("click", second_click);
+            }
         }
     }
     return piece;
@@ -54,7 +62,6 @@ function handle_click(event) {
     }
     else {
         if (document.getElementsByClassName("highlighted-piece-main").length >= 1) {
-            console.log("HI");
             piece.classList.add("highlighted-piece-secondary");
         }
     }
@@ -75,7 +82,6 @@ function flip_table() {
     let table_body = document.getElementById("chess-board-table-body");
     for (const i of table_body.children) {
         table_body.prepend(i);
-        console.log(i);
     }
 }
 
