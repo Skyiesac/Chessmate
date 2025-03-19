@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from .HelperFunctions import pair_add, average, midpoint, sign
-import sys
 
 l = [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
 KING_MOVES   = [(1, 0), (0, 1), (1, 1), (-1, 0), (0, -1), (-1, -1), (1, -1), (-1, 1)]
@@ -22,7 +21,6 @@ def vm_list(piece, pos):
 class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     def __init__(self, start_string=None, moves=[], to_move='white'):
-        sys.setrecursionlimit(2000)
         self.board   = self.board_from_string(start_string)
         self.moves   = moves
         self.to_move = to_move
@@ -78,7 +76,7 @@ class ChessGame(object):
                 if self.board[i][j] == ('K' if color == 'white' else 'k'):
                     return (i, j)
         return False
-    def internal_move(self, op, np, promote='q'):
+    def internal_move(self, op, np, check_inf=True, promote='q'):
         if promote.lower() not in ('q', 'n', 'r', 'b'): return False
         info=''
         old_board = self.str_board()
@@ -91,14 +89,15 @@ class ChessGame(object):
         self.s(np, self.g(op))
         self.s(op, '-')
         self.toggle_move()
-        if   self.is_mate():  info += 'checkmate'
-        elif self.is_check(): info += 'check'
+        if check_inf:
+            if   self.is_mate():  info += 'checkmate'
+            elif self.is_check(): info += 'check'
 
         self.moves.append(";;".join([old_board, self.translate(op), self.translate(np), info]))
         return True
     def puts_check(self, op, np):
         c = 'white' if self.g(op) == self.g(op).upper() else 'black'
-        self.internal_move(op, np)
+        self.internal_move(op, np, check_inf=False)
         is_check = self.is_check(self.oppo())
         self.undo_move()
         return is_check
