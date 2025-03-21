@@ -17,7 +17,7 @@
     {{ game|json_script:"game-get-info" }}
   </head>
   <body>
-    <h1 id="chess_banner">Chess Game</h1>
+    <h1 id="chess_banner">Chess Game [id: {{ chess_id }}]</h1>
     <div id="board-table-container">
       <table id="chess-board-table">
         <thead id="chess-board-table-head">
@@ -123,6 +123,9 @@
         </tbody>
       </table>
     </div>
-    <button id="flip-board">flip board</button>
+    <div id="below-board-section">
+      <button id="flip-board">flip board</button>
+      <span id="game-status">...</span>
+    </div>
   </body>
 </html>

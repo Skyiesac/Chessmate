@@ -6,6 +6,7 @@ var pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bis
 
 function lower(s)       { return s.toLowerCase(); }
 function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
+function oppo(color)    { return color == 'black' ? 'white' : 'black' }
 function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
 
 function set_info() {
@@ -13,7 +14,18 @@ function set_info() {
     to_move     = game_info["to_move"];
     extra_info  = game_info["info"].split(";;").slice(3);
     populate_board(game_board, to_move);
+
+    let game_stat = document.getElementById("game-status");
+    if (extra_info.includes("checkmate")) {
+        rem_all("to-move-piece");
+        game_stat.innerText  = "Checkmate " + oppo(to_move) + " wins!";
+    } else if (extra_info.includes("check")) {
+        game_stat.innerText  = "Check, " + to_move + " to move.";
+    } else {
+        game_stat.innerText  = to_move[0].toUpperCase() + to_move.slice(1) + " to move.";
+    }
 }
+
 
 function parse_str_board(str_board) {
     return str_board.split("\n").reverse();
@@ -73,12 +85,6 @@ function success_move(response) {
         if (data["result"] == "valid move") {
             game_info = data;
             set_info();
-            if        ( extra_info == "check"     ) {
-                console.log("check");
-            } else if ( extra_info == "checkmate" ) {
-                rem_all("to-move-piece");
-                alert("checkmate");
-            }
         } else {
             alert("invalid move");
         }

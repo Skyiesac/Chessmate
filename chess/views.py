@@ -34,7 +34,8 @@ def chess_game(request, game_id):
         return JsonResponse({"result": result, "board": game.board, "to_move": game.to_move, "info": ng.moves[-1]})
     else:
         return render(request, 'chess_game.html',
-                      {"game": {"info"   : game.info , "moves": ng.moves, "board": ng.str_board(),
+                      {"chess_id": game_id,
+                       "game": {"info"   : game.info , "moves": ng.moves, "board": ng.str_board(),
                                 "to_move": ng.to_move, "info" : ng.moves[-1] if len(ng.moves) >= 1 else ""}})
 
 def chess_puzzle(request, puzzle_id):
