@@ -52,7 +52,7 @@ class ChessGame(object):
         return {"board": a[0],
                 "op": self.translate(a[1]),
                 "np": self.translate(a[2]),
-                "info": a[3]}
+                "info": a[3:]}
     def en_passant(self, op, np):
         if self.g(op).lower() != 'p' or len(self.moves) <= 0: return False
         last = self.move_unpack(self.moves[-1])
@@ -101,22 +101,22 @@ class ChessGame(object):
         return False
     def internal_move(self, op, np, check_inf=True, promote='q'):
         if promote.lower() not in ('q', 'n', 'r', 'b'): return False
-        info=''
+        info=[]
         old_board = self.str_board()
         if (enpass := self.en_passant(op, np)):
-            info += 'enpass-' + self.translate(enpass)
+            info += ['enpass-' + self.translate(enpass)]
             self.s(enpass, '-')
         elif self.g(op).lower() == 'p' and (np[0] == 7 or np[0] == 0):
-            info += 'promote-' + promote
+            info += ['promote-' + promote]
             self.s(op, promote.upper() if self.to_move == 'white' else promote.lower())
         self.s(np, self.g(op))
         self.s(op, '-')
         self.toggle_move()
         if check_inf:
-            if   self.is_mate():  info += 'checkmate'
-            elif self.is_check(): info += 'check'
+            if   self.is_mate():  info += ['checkmate']
+            elif self.is_check(): info += ['check']
 
-        self.moves.append(";;".join([old_board, self.translate(op), self.translate(np), info]))
+        self.moves.append(";;".join([old_board, self.translate(op), self.translate(np), *info]))
         return True
     def puts_check(self, op, np):
         c = 'white' if self.g(op) == self.g(op).upper() else 'black'

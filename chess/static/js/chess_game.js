@@ -1,7 +1,7 @@
 import { post_request } from "./helper_functions.js";
 
 var csrftoken;
-var flip_board_button, game_info, game_board, to_move,  ord;
+var flip_board_button, game_info, game_board, extra_info, to_move;
 
 var pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
 function lower(s)       { return s.toLowerCase(); }
@@ -123,12 +123,12 @@ document.addEventListener('DOMContentLoaded', function() {
     csrftoken           = document.querySelector('[name=csrfmiddlewaretoken]').value;
     flip_board_button   = document.getElementById("flip-board");
     game_info           = JSON.parse(document.getElementById("game-get-info").textContent);
-    game_board          = parse_str_board(game_info.board);
-    to_move             = game_info.to_move;
-    ord                 = false;
+    game_board          = parse_str_board(game_info["board"]);
+    to_move             = game_info["to_move"];
+    extra_info          = game_info["info"].split(";;").slice(3);
 
     populate_board(game_board, to_move);
-    console.log(game_info);
+    console.log(extra_info);
 
     flip_board_button.addEventListener("click", (event) => {
         flip_table();

@@ -31,9 +31,9 @@ def chess_game(request, game_id):
             result = "valid move"
         else:
             result = "invalid move"
-        return JsonResponse({"result": result, "board": game.board, "to_move": game.to_move})
+        return JsonResponse({"result": result, "board": game.board, "to_move": game.to_move, "info": ng.moves[-1]})
     else:
-        return render(request, 'chess_game.html', {"game": {"info": game.info, "moves": ng.moves, "board": ng.str_board(), "to_move": ng.to_move}})
+        return render(request, 'chess_game.html', {"game": {"info": game.info, "moves": ng.moves, "board": ng.str_board(), "to_move": ng.to_move, "info": ng.moves[-1]}})
 
 def chess_puzzle(request, puzzle_id):
     return render(request, 'chess_puzzle.html', {"puzzle_info": {"HI": "BYE"}})
