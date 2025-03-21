@@ -81,7 +81,6 @@ function second_click(event) {
     let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
     post_request("", csrftoken, data_body, success_move);
 }
-
 function highlight_add(piece) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
