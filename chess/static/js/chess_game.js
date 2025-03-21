@@ -2,11 +2,18 @@ import { post_request } from "./helper_functions.js";
 
 var csrftoken;
 var flip_board_button, game_info, game_board, extra_info, to_move;
-
 var pdict = { '-': 'empty', 'p':  'pawn', 'r':  'rook', 'n': 'knight', 'b': 'bishop', 'q': 'queen', 'k': 'king' };
+
 function lower(s)       { return s.toLowerCase(); }
 function gcolor(s)      { if (s == '-') { return 'empty'; } return lower(s) == s ? 'black' : 'white' }
 function piece_url(p)   { return chess_url_image_base + gcolor(p) + '_' + pdict[lower(p)] + '.svg' }
+
+function set_info() {
+    game_board  = parse_str_board(game_info["board"]);
+    to_move     = game_info["to_move"];
+    extra_info  = game_info["info"].split(";;").slice(3);
+    populate_board(game_board, to_move);
+}
 
 function parse_str_board(str_board) {
     return str_board.split("\n").reverse();
@@ -23,7 +30,6 @@ function handle_piece(piece, addt=true) {
     }
 }
 
-
 function populate_board(ll, to_move = false) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
@@ -36,6 +42,7 @@ function populate_board(ll, to_move = false) {
         }
     }
 }
+
 function translate(y, x = null) {
     return  ( typeof(y) == 'string'
             ? [parseInt(y[1]), 'abcdefgh'.indexOf(y[0])]
@@ -55,21 +62,25 @@ function get_from_el(piece_el) {
 
 function rem_all(class_name) {
     let els = document.getElementsByClassName(class_name);
-    for (let i = 0; i < els.length; i++) {
-        els[i].classList.remove(class_name);
+    while (els.length >= 1) {
+        els[0].classList.remove(class_name);
     }
 }
 
 function success_move(response) {
     rem_all("highlighted-piece-main");
     response.json().then(data => {
-        console.log(data);
         if (data["result"] == "valid move") {
-            to_move = data["to_move"];
-            game_board = parse_str_board(data["board"]);
-            populate_board(game_board, to_move);
+            game_info = data;
+            set_info();
+            if        ( extra_info == "check"     ) {
+                console.log("check");
+            } else if ( extra_info == "checkmate" ) {
+                rem_all("to-move-piece");
+                alert("checkmate");
+            }
         } else {
-            console.log("invalid move");
+            alert("invalid move");
         }
     });
 }
@@ -81,6 +92,7 @@ function second_click(event) {
     let data_body = {"op": get_from_el(piece_main), "np": get_from_el(piece_second)}
     post_request("", csrftoken, data_body, success_move);
 }
+
 function highlight_add(piece) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
@@ -123,12 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
     csrftoken           = document.querySelector('[name=csrfmiddlewaretoken]').value;
     flip_board_button   = document.getElementById("flip-board");
     game_info           = JSON.parse(document.getElementById("game-get-info").textContent);
-    game_board          = parse_str_board(game_info["board"]);
-    to_move             = game_info["to_move"];
-    extra_info          = game_info["info"].split(";;").slice(3);
-
-    populate_board(game_board, to_move);
-    console.log(extra_info);
+    set_info(game_info);
 
     flip_board_button.addEventListener("click", (event) => {
         flip_table();

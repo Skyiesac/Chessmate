@@ -10,7 +10,7 @@ body {
   text-align: center;
 }
 
-table {
+#chess-board-table {
   border-collapse: collapse;
   width: 100%;
   margin: 0 auto;
@@ -68,5 +68,4 @@ table {
 .chess-board-header {
   padding: 20px;
 }
-
 
