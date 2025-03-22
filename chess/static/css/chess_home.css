@@ -14,15 +14,16 @@ body {
   border-collapse: collapse;
   width: 100%;
   margin: 0 auto;
-  max-width: 800px;
+  max-width: 700px;
+  max-height: 700px;
 }
 
 .chess-board-cell {
   color: #AAA;
   background-color: white;
   padding: 5px;
-  width: 100px !important;
-  height: 100px !important;
+  width: 80px !important;
+  height: 80px !important;
   filter: brightness(0.8);
   user-select: none;
 }
@@ -37,7 +38,7 @@ body {
 
 .chess-piece-image {
   pointer-events: none;
-  height: 100px;
+  height: 80px;
 }
 
 .to-move-piece {
