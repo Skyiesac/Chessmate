@@ -1,5 +1,5 @@
 
-import { post_request } from "./helper_functions.js";
+import * as hl from "./helper_functions.js";
 
 document.addEventListener('DOMContentLoaded', function() {
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let newgame_button = document.getElementById("new-game-button");
 
     newgame_button.addEventListener("click", (event) => {
-        post_request("", csrftoken);
+        hl.post_request("", csrftoken);
     });
 
 });

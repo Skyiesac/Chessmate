@@ -123,21 +123,9 @@ function handle_click(event) {
     }
 }
 
-function flip_table() {
-    let table_body = document.getElementById("chess-board-table-body");
-    for (const i of table_body.children) {
-        table_body.prepend(i);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     csrftoken           = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    flip_board_button   = document.getElementById("flip-board");
-    game_info           = JSON.parse(document.getElementById("game-get-info").textContent);
-    set_info();
-
-    flip_board_button.addEventListener("click", (event) => {
-        flip_table();
-    });
+    // flip_board_button   = document.getElementById("flip-board");
+    // memory_puzzle_info  = JSON.parse(document.getElementById("memory-puzzle-get-info").textContent);
 });
 

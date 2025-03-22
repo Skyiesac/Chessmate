@@ -38,7 +38,6 @@ def chess_game(request, game_id):
                        "game": {"info"   : game.info , "moves": ng.moves, "board": ng.str_board(),
                                 "to_move": ng.to_move, "info" : ng.moves[-1] if len(ng.moves) >= 1 else ""}})
 
-def chess_puzzle(request, puzzle_id):
-    return render(request, 'chess_puzzle.html', {"puzzle_info": {"HI": "BYE"}})
-
+def chess_memory_puzzle(request):
+    return render(request, 'chess_memory_puzzle.html')
 

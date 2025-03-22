@@ -1,14 +1,17 @@
 
+function rem_all(class_name) {
+    let els = document.getElementsByClassName(class_name);
+    while (els.length >= 1) {
+        els[0].classList.remove(class_name);
+    }
+}
+
 function func_redirect(response) {
     window.location.href = response["url"];
 }
 
 function log_error(error) {
     console.error('Error', error);
-}
-
-function juice(rep) {
-    console.log("juice");
 }
 
 function post_request(url, csrf, body=null, succ=func_redirect, err=log_error, redirect='follow') {
@@ -61,4 +64,4 @@ function post_request_fetch(url, send_data, csrf) {
 }
 */
 
-export { post_request } ;
+export { post_request, rem_all } ;

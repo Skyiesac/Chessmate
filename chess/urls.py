@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import chess_home, chess_game, chess_puzzle
+from .views import chess_home, chess_game, chess_memory_puzzle
 
 urlpatterns = [
-    path( "",                       chess_home  , name="chess_home"   ),
-    path( "game/<int:game_id>"    , chess_game  , name="chess_game"   ),
-    path( "puzzle/<int:puzzle_id>", chess_puzzle, name="chess_puzzle" ),
+    path( ""                   , chess_home          , name="chess_home"          ),
+    path( "game/<int:game_id>" , chess_game          , name="chess_game"          ),
+    path( "memorypuzzle/"      , chess_memory_puzzle , name="chess_memory_puzzle" ),
 ]
