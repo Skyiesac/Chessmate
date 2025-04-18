@@ -1,3 +1,1 @@
-#!/usr/bin/python3
-
-from .ChessBase       import *
+from .ChessBase import *
