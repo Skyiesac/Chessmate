@@ -56,3 +56,32 @@ body {
     padding: 0.8rem 1.5rem;
   }
 }
+
+.blunder-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ff4444;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-width: 300px;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.blunder-text {
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
