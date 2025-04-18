@@ -1,12 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  color: #AAA;
-  background-color: black;
+  color: #EEE;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+#chess_banner {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#new-game-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background-color: #ffc107;
+  color: #222;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#new-game-button:hover {
+  background-color: #ff9800;
+  transform: scale(1.05);
 }
 
 #board-table-container {
   text-align: center;
+  margin-top: 3rem;
+  width: 100%;
+  max-width: 600px;
 }
 
+@media (max-width: 600px) {
+  #chess_banner {
+    font-size: 2.2rem;
+  }
+
+  #new-game-button {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+}
