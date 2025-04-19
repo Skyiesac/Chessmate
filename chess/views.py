@@ -25,7 +25,7 @@ def chess_game(request, game_id):
         rec_data = json.loads(request.body)
         if "op" not in rec_data or "np" not in rec_data:
             return False
-        
+
         resg = ng.move(
             (int(rec_data["op"][0]), int(rec_data["op"][1])),
             np=(int(rec_data["np"][0]), int(rec_data["np"][1])),
@@ -36,7 +36,7 @@ def chess_game(request, game_id):
             game.to_move = ng.to_move
             game.save()
             result = "valid move"
-            
+
             # Get blunder message if any
             blunder_message = ng.get_last_blunder_message()
         else:

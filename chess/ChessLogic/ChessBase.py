@@ -70,6 +70,7 @@ def read_pgn(str_pgn):
 
 from .blunder_detection import ChessBlunderDetector
 
+
 class ChessGame(object):
     default_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
@@ -159,31 +160,31 @@ class ChessGame(object):
         try:
             fen = []
             empty = 0
-            
+
             for row in range(7, -1, -1):
                 for col in range(8):
                     piece = self.board[row][col]
-                    if piece == '-':
+                    if piece == "-":
                         empty += 1
                     else:
                         if empty > 0:
                             fen.append(str(empty))
                             empty = 0
                         fen.append(piece)
-                
+
                 if empty > 0:
                     fen.append(str(empty))
                     empty = 0
                 if row > 0:
-                    fen.append('/')
-            
-            fen = ''.join(fen)
+                    fen.append("/")
+
+            fen = "".join(fen)
             fen += f" {'w' if self.to_move == 'white' else 'b'} KQkq - 0 1"
-            
+
             return fen
         except Exception as e:
             print(f"Error generating FEN: {e}")
-           
+
             return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
     def internal_move(self, op, np, check_inf=True, promote="q"):
@@ -191,9 +192,9 @@ class ChessGame(object):
             return False
         info = []
         old_board = self.str_board()
-        
+
         fen_before = self.board_to_fen()
-        
+
         if enpass := self.en_passant(op, np):
             info += ["enpass-" + self.translate(enpass)]
             self.s(enpass, "-")
@@ -203,19 +204,21 @@ class ChessGame(object):
         self.s(np, self.g(op))
         self.s(op, "-")
         self.toggle_move()
-        
+
         fen_after = self.board_to_fen()
-        
+
         print("\nChecking for blunders...")
         try:
-            is_blunder, blunder_message = self.blunder_detector.detect_blunder(fen_before, fen_after)
+            is_blunder, blunder_message = self.blunder_detector.detect_blunder(
+                fen_before, fen_after
+            )
             self.last_blunder_message = blunder_message
             if is_blunder:
                 print(f"Blunder detected: {blunder_message}")
                 info.append("blunder")
         except Exception as e:
             self.last_blunder_message = "Move analyzed..."
-        
+
         if check_inf:
             if self.is_mate():
                 info += ["checkmate"]
