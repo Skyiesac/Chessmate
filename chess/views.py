@@ -1,10 +1,36 @@
 import json
+import openai
+import random
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from .ChessLogic.ChessBase import ChessGame
 from .models import Game
 from .ChessLogic.chess_news_scraper import get_all_news
 import traceback
+from decouple import config
+
+openai.api_key=config("OPENAI_API_KEY")
+
+def get_chess_quote():
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You're a chess master and philosopher."},
+                {"role": "user", "content": "Give me a motivational chess quote."}
+            ],
+            max_tokens=60,
+            temperature=0.8
+        )
+        return response.choices[0].message['content'].strip()
+    except Exception as e:
+        print("OpenAI error:", e)
+        fallback_quotes = [
+            "When you see a good move, look for a better one. – Emanuel Lasker",
+            "Chess is the gymnasium of the mind. – Blaise Pascal",
+        ]
+        return random.choice(fallback_quotes)
+
 
 
 def chess_home(request):
@@ -12,9 +38,12 @@ def chess_home(request):
         game = Game.objects.create()
         return redirect("chess_game", game_id=game.pk)
     else:
+        quote = get_chess_quote()
         games = Game.objects.all()
-        return render(request, "chess_home.html", {"games": [x.id for x in games]})
-
+        return render(request, "chess_home.html", {
+            "games": [x.id for x in games],
+            "quote": quote
+        })
 
 def chess_game(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
