@@ -72,12 +72,34 @@ function get_from_el(piece_el) {
     return [parseInt(id_g[1]) - 1, parseInt(id_g[2]) - 1];
 }
 
+function show_blunder_message(message) {
+    const blunderDiv = document.getElementById('blunder-message');
+    const blunderText = blunderDiv.querySelector('.blunder-text');
+    
+    if (message) {
+        blunderText.textContent = message;
+        blunderDiv.style.display = 'block';
+        
+        // Hide the message after 5 seconds
+        setTimeout(() => {
+            blunderDiv.style.display = 'none';
+        }, 5000);
+    } else {
+        blunderDiv.style.display = 'none';
+    }
+}
+
 function success_move(response) {
     hl.rem_all("highlighted-piece-main");
     response.json().then(data => {
         if (data["result"] == "valid move") {
             game_info = data;
             set_info();
+            
+            // Show blunder message if present
+            if (data["blunder_message"]) {
+                show_blunder_message(data["blunder_message"]);
+            }
         } else {
             alert("invalid move");
         }
