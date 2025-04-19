@@ -1,22 +1,26 @@
 FROM python:3.9-slim
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with verbose output
+RUN pip install --verbose --no-cache-dir -r requirements.txt
+RUN pip install --verbose --no-cache-dir python-chess==1.2.0
+RUN pip list | grep chess
+RUN python -c "import chess; print(f'Chess module imported successfully')"
+RUN python -c "import chess; print(f'Chess module attributes: {[attr for attr in dir(chess) if not attr.startswith(\"__\")]}')"
+RUN python -c "import sys; print(f'Python path: {sys.path}')"
 
-# Copy the rest of the application
 COPY . .
 
-# Add the current directory to PYTHONPATH
 ENV PYTHONPATH=/app
 
-# Expose port
 EXPOSE 8000
 
-# Command to run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver"]
