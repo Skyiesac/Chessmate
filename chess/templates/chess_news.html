@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chess News{% endblock %}</title>
+
+    <style>
+       
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Container for News Cards */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Card Header and Body */
+        .card-header {
+            font-size: 1.5rem;
+            font-weight: 500;
+            background-color: #343a40;
+            color: white;
+        }
+
+        .card-body {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        /* List Group Styles */
+        .list-group-item {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #fafafa;
+            transition: background-color 0.3s;
+        }
+
+        .list-group-item:hover {
+            background-color:rgb(0, 167, 244);
+        }
+
+        /* Link Styling */
+        a.text-decoration-none {
+            color: #007bff;
+            font-size: 1rem;
+            transition: color 0.3s ease-in-out;
+        }
+
+        a.text-decoration-none:hover {
+            color: #0056b3;
+        }
+
+        /* Error Alert Styling */
+        .alert-danger {
+            font-size: 1.1rem;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            margin-top: 20px;
+        }
+
+        /* Small Text and Source Information */
+        small.text-muted {
+            font-size: 0.9rem;
+        }
+
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    {% block content %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center"style=" color: #ffc107">Latest Chess News</h1>
+
+        {% if error %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="card mt-4 shadow-sm border-light">
+            <div class="card-header bg-dark text-white">
+                {% comment %} <h5 class="card-title mb-0">All Chess News</h5> {% endcomment %}
+            </div>
+            <div class="card-body">
+                {% if all_news %}
+                    <ul class="list-group list-group-flush">
+                        {% for article in all_news %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ article.link }}" target="_blank" class="text-decoration-none text-dark">
+                                    {{ article.title }}
+                                </a>
+                                <small class="text-muted">{{ article.date }} - Source: {{ article.source }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No news available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+</body>
+</html>

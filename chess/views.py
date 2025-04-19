@@ -1,11 +1,10 @@
 import json
-from django.core import serializers
-from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from .ChessLogic.ChessBase import ChessGame
 from .models import Game
-
+from .ChessLogic.chess_news_scraper import get_all_news
+import traceback
 
 def chess_home(request):
     if request.method == "POST":
@@ -71,5 +70,25 @@ def chess_game(request, game_id):
         )
 
 
-def chess_memory_puzzle(request):
-    return render(request, "chess_memory_puzzle.html")
+def chess_news(request):
+    try:
+        news_by_source = get_all_news()
+        context = {
+            'chesscom_news': news_by_source.get('chesscom_news', []),
+            'fide_news': news_by_source.get('fide_news', []),
+            'lichess_news': news_by_source.get('lichess_news', []),
+            'all_news': news_by_source.get('all_news', []),
+        }
+        
+        return render(request, 'chess_news.html', context)
+    except Exception as e:
+        
+        print(f"Error fetching chess news: {e}")
+        
+        traceback.print_exc()
+       
+        context = {
+            'all_news': [],
+            'error': f"Failed to fetch chess news!"
+        }
+        return render(request, 'chess_news.html', context)
