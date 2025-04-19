@@ -22,7 +22,7 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-#new-game-button {
+#new-game-button, #news-button {
   padding: 1rem 2rem;
   font-size: 1.2rem;
   background-color: #ffc107;
@@ -32,11 +32,20 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin: 1rem; /* Added space between buttons */
 }
 
-#new-game-button:hover {
+#new-game-button:hover, #news-button:hover {
   background-color: #ff9800;
   transform: scale(1.05);
+}
+
+#news-button {
+  background-color: #28a745; /* Green button for chess news */
+}
+
+#news-button:hover {
+  background-color: #218838; /* Darker green on hover */
 }
 
 #board-table-container {
@@ -51,7 +60,7 @@ body {
     font-size: 2.2rem;
   }
 
-  #new-game-button {
+  #new-game-button, #news-button {
     font-size: 1rem;
     padding: 0.8rem 1.5rem;
   }

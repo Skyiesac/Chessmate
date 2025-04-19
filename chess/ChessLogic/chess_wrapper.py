@@ -42,7 +42,6 @@ SQUARE_NAMES = [
     'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8',
 ]
 
-
 class Piece:
     def __init__(self, piece_type, color):
         self.piece_type = piece_type
